@@ -9,22 +9,24 @@ class DocumentTokenizer:
 
 class InvertedIndex:
     def __init__(self):
-        self.invertedIndex = {}
+        self.inverted_index = {}
 
-    def incr(self, token):
-        self.invertedIndex[token] = 1 if token not in self.invertedIndex else self.invertedIndex[token] + 1
+    def register(self, token, documentId):
+        self.inverted_index[token] = \
+            [documentId] if token not in self.inverted_index else self.inverted_index[token] + [documentId]
 
 
 class Document:
 
     def __init__(self):
-        self.fieldsToTokenize = []
+        self.fields_to_tokenize = []
         self.id = ""
 
-    def tokenize(self, tokenizer, invertedIndex):
-        for field in self.fieldsToTokenize:
+    def tokenize(self, tokenizer, inverted_index):
+        for field in self.fields_to_tokenize:
             setattr(self, field + '_tokens', tokenizer.tokenize(getattr(self, field)))
-            inve
+            for token in getattr(self, field + '_tokens'):
+                inverted_index.register(token, self.id)
 
 class CACMDocument(Document):
 
@@ -36,7 +38,7 @@ class CACMDocument(Document):
         self.summary = w
         self.keywords = k
 
-        self.fieldsToTokenize = ["title", "summary", "keywords"]
+        self.fields_to_tokenize = ["title", "summary", "keywords"]
 
 
     def __init__(self, document):
