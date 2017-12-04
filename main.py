@@ -38,22 +38,19 @@ class CACMDocument(Document):
 
         self.fieldsToTokenize = ["title", "summary", "keywords"]
 
-
-    def __init__(self, document):
-        self.summary = ''
-        self.keywords = ''
-        self.title = ''
-        self.id = 0
+    @classmethod
+    def from_string(self, document):
         doc_parts = re.split('^\.', document, flags=re.MULTILINE)
         if len(doc_parts) > 0 and doc_parts[0] != '':
-            self.id = int(doc_parts[0])
+            identifier = int(doc_parts[0])
             for element in doc_parts:
                 if element.startswith('T'):
-                    self.title = element.split('\n')[1]
+                    title = element.split('\n')[1]
                 elif element.startswith('W'):
-                    self.summary = element.split('\n')[1]
+                    summary = element.split('\n')[1]
                 elif element.startswith('K'):
-                    self.keywords = element.split('\n')[1]
+                    keywords = element.split('\n')[1]
+        return Document(identifier, title, summary, keywords)
 
 
 with open('cacm.all') as f:
