@@ -43,6 +43,10 @@ class CACMDocument(Document):
     @classmethod
     def from_string(self, document):
         doc_parts = re.split('^\.', document, flags=re.MULTILINE)
+        summary = ""
+        keywords = ""
+        title = ""
+        identifier = 0
         if len(doc_parts) > 0 and doc_parts[0] != '':
             identifier = int(doc_parts[0])
             for element in doc_parts:
@@ -52,7 +56,7 @@ class CACMDocument(Document):
                     summary = element.split('\n')[1]
                 elif element.startswith('K'):
                     keywords = element.split('\n')[1]
-        return Document(identifier, title, summary, keywords)
+        return CACMDocument(identifier, title, summary, keywords)
 
 
 with open('cacm.all') as f:
