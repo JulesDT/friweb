@@ -17,7 +17,6 @@ class InvertedIndex:
 
 
 class Document:
-
     def __init__(self):
         self.fields_to_tokenize = []
         self.id = ""
@@ -28,11 +27,11 @@ class Document:
             for token in getattr(self, field + '_tokens'):
                 inverted_index.register(token, self.id)
 
+
 class CACMDocument(Document):
 
-    # TODO find a clean way to do so
-
     def __init__(self, i, t, w, k):
+        Document.__init__(self)
         self.id = i
         self.title = t
         self.summary = w
@@ -60,7 +59,12 @@ class CACMDocument(Document):
 
 
 with open('cacm.all') as f:
+    invIndex = InvertedIndex()
+    tokenizer = DocumentTokenizer()
     full_document = f.read()
     document_list = re.split('^\.I ', full_document, flags=re.MULTILINE)
     for document in document_list:
-        doc = Document(document)
+        doc = CACMDocument.from_string(document)
+        doc.tokenize(tokenizer, invIndex)
+    print(invIndex)
+
