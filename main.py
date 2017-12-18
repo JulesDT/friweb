@@ -1,10 +1,16 @@
+# coding=utf-8
 import re
 
 
 class DocumentTokenizer:
     @staticmethod
-    def tokenize(str):
-        return re.findall(r"\w+", str)
+    def tokenize(s, normalizer):
+        return [normalizer.normalize(token) for token in re.findall(r"\w+", s)]
+
+class DocumentNormalizer:
+    @staticmethod
+    def normalize(token):
+        return re.sub(r"\d", "🐼", token.lower())
 
 
 class InvertedIndex:
@@ -14,8 +20,13 @@ class InvertedIndex:
     def __str__(self):
         res = ""
         for (key, val) in self.inverted_index.items():
-            res += key + " [" + " ".join([str(i) for i in val]) + "]\n"
+            res += key + str(val) + "\n"
         return res
+
+    def filter(self, pattern):
+        copy = InvertedIndex()
+        copy.inverted_index = {key: val for (key, val) in self.inverted_index.items() if re.match(pattern, key)}
+        return copy
 
     def register(self, token, documentId):
         self.inverted_index[token] = \
@@ -27,9 +38,9 @@ class Document:
         self.fields_to_tokenize = []
         self.id = ""
 
-    def tokenize(self, tokenizer, inverted_index):
+    def tokenize(self, tokenizer, normalizer, inverted_index):
         for field in self.fields_to_tokenize:
-            setattr(self, field + '_tokens', tokenizer.tokenize(getattr(self, field)))
+            setattr(self, field + '_tokens', tokenizer.tokenize(getattr(self, field), normalizer))
             for token in getattr(self, field + '_tokens'):
                 inverted_index.register(token, self.id)
 
@@ -67,10 +78,11 @@ class CACMDocument(Document):
 with open('cacm.all') as f:
     invIndex = InvertedIndex()
     tokenizer = DocumentTokenizer()
+    normalizer = DocumentNormalizer()
     full_document = f.read()
     document_list = re.split('^\.I ', full_document, flags=re.MULTILINE)
     for document in document_list:
         doc = CACMDocument.from_string(document)
-        doc.tokenize(tokenizer, invIndex)
-    print(invIndex)
+        doc.tokenize(tokenizer, normalizer, invIndex)
+    print(invIndex.filter(r"the"))
 
