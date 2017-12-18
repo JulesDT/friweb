@@ -3,9 +3,16 @@ import re
 
 
 class DocumentTokenizer:
-    @staticmethod
-    def tokenize(s, normalizer):
-        return [normalizer.normalize(token) for token in re.findall(r"\w+", s)]
+
+    def __init__(self, stop_list):
+        self.stop_list = stop_list
+
+    def tokenize(self, s, normalizer):
+        for token in re.findall(r"\w+", s):
+            normalized_token = normalizer.normalize(token)
+            if self.stop_list.valid(normalized_token):
+                yield normalized_token
+
 
 class DocumentNormalizer:
     @staticmethod
@@ -40,7 +47,7 @@ class Document:
 
     def tokenize(self, tokenizer, normalizer, inverted_index):
         for field in self.fields_to_tokenize:
-            setattr(self, field + '_tokens', tokenizer.tokenize(getattr(self, field), normalizer))
+            setattr(self, field + '_tokens', [word for word in tokenizer.tokenize(getattr(self, field), normalizer)])
             for token in getattr(self, field + '_tokens'):
                 inverted_index.register(token, self.id)
 
@@ -75,9 +82,20 @@ class CACMDocument(Document):
         return CACMDocument(identifier, title, summary, keywords)
 
 
+class StopList():
+
+    def __init__(self, path):
+        with open('./{}'.format(path), 'r') as f:
+            self.stop_list = set(f.read().split('\n'))
+
+    def valid(self, word):
+        return word not in self.stop_list
+
+
 with open('cacm.all') as f:
     invIndex = InvertedIndex()
-    tokenizer = DocumentTokenizer()
+    stop_list = StopList('common_words')
+    tokenizer = DocumentTokenizer(stop_list)
     normalizer = DocumentNormalizer()
     full_document = f.read()
     document_list = re.split('^\.I ', full_document, flags=re.MULTILINE)
@@ -85,4 +103,3 @@ with open('cacm.all') as f:
         doc = CACMDocument.from_string(document)
         doc.tokenize(tokenizer, normalizer, invIndex)
     print(invIndex.filter(r"the"))
-
