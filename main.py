@@ -11,6 +11,12 @@ class InvertedIndex:
     def __init__(self):
         self.inverted_index = {}
 
+    def __str__(self):
+        res = ""
+        for (key, val) in self.inverted_index.items():
+            res += key + " [" + " ".join([str(i) for i in val]) + "]\n"
+        return res
+
     def register(self, token, documentId):
         self.inverted_index[token] = \
             [documentId] if token not in self.inverted_index else self.inverted_index[token] + [documentId]
