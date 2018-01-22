@@ -37,8 +37,17 @@ class InvertedIndex:
         return copy
 
     def register(self, token, documentId):
-        self.inverted_index[token] = \
-            [documentId] if token not in self.inverted_index else self.inverted_index[token] + [documentId]
+        if token in self.inverted_index:
+            self.inverted_index[token].add(documentId)
+        else:
+            self.inverted_index[token] = set([documentId])
+
+    def merge(self, inv_index):
+        for token in inv_index.inverted_index.keys():
+            if token in self.inverted_index:
+                self.inverted_index.update(inv_index.inverted_index[token])
+            else:
+                self.inverted_index = inv_index.inverted_index[token]
 
 
 class Document:
@@ -112,13 +121,15 @@ class StopList():
 #         doc.tokenize(tokenizer, normalizer, invIndex)
 #     print(invIndex.filter(r"the"))
 
-invIndex = InvertedIndex()
 stop_list = StopList('common_words')
 tokenizer = DocumentTokenizer(stop_list)
 normalizer = DocumentNormalizer()
 document_list = []
 i = 0
+invindex_list = []
 for filename in glob.glob('./pa1-data/*'):
+    invIndex = InvertedIndex()
+    invindex_list.append(invIndex)
     print('Reading ' + filename)
     for documentFileName in glob.glob(filename + '/*'):
         with open(documentFileName) as f:
@@ -126,4 +137,6 @@ for filename in glob.glob('./pa1-data/*'):
             doc = CS276Document(document, i)
             doc.tokenize(tokenizer, normalizer, invIndex)
             i += 1
-    print(invIndex.filter(r"inter"))
+for inv_index in invindex_list[1:]:
+    invindex_list[0].merge(inv_index)
+print(invIndex.filter(r"inter"))
