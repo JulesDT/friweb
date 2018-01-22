@@ -1,15 +1,16 @@
 # coding=utf-8
 import re
+import glob
 
 
 class DocumentTokenizer:
-
     def __init__(self, stop_list):
         self.stop_list = stop_list
 
     def tokenize(self, s, normalizer):
-        for token in re.findall(r"\w+", s):
-            normalized_token = normalizer.normalize(token)
+        reg = re.compile(r"\w+")
+        for token in reg.findall(s):
+            normalized_token = token  # normalizer.normalize(token)
             if self.stop_list.valid(normalized_token):
                 yield normalized_token
 
@@ -53,7 +54,6 @@ class Document:
 
 
 class CACMDocument(Document):
-
     def __init__(self, i, t, w, k):
         Document.__init__(self)
         self.id = i
@@ -82,8 +82,16 @@ class CACMDocument(Document):
         return CACMDocument(identifier, title, summary, keywords)
 
 
-class StopList():
+class CS276Document(Document):
+    def __init__(self, content, id):
+        Document.__init__(self)
+        self.content = content
+        self.id = id
 
+        self.fields_to_tokenize = ["content"]
+
+
+class StopList():
     def __init__(self, path):
         with open('./{}'.format(path), 'r') as f:
             self.stop_list = set(f.read().split('\n'))
@@ -92,14 +100,30 @@ class StopList():
         return word not in self.stop_list
 
 
-with open('cacm.all') as f:
-    invIndex = InvertedIndex()
-    stop_list = StopList('common_words')
-    tokenizer = DocumentTokenizer(stop_list)
-    normalizer = DocumentNormalizer()
-    full_document = f.read()
-    document_list = re.split('^\.I ', full_document, flags=re.MULTILINE)
-    for document in document_list:
-        doc = CACMDocument.from_string(document)
-        doc.tokenize(tokenizer, normalizer, invIndex)
-    print(invIndex.filter(r"the"))
+# with open('cacm.all') as f:
+#     invIndex = InvertedIndex()
+#     stop_list = StopList('common_words')
+#     tokenizer = DocumentTokenizer(stop_list)
+#     normalizer = DocumentNormalizer()
+#     full_document = f.read()
+#     document_list = re.split('^\.I ', full_document, flags=re.MULTILINE)
+#     for document in document_list:
+#         doc = CACMDocument.from_string(document)
+#         doc.tokenize(tokenizer, normalizer, invIndex)
+#     print(invIndex.filter(r"the"))
+
+invIndex = InvertedIndex()
+stop_list = StopList('common_words')
+tokenizer = DocumentTokenizer(stop_list)
+normalizer = DocumentNormalizer()
+document_list = []
+i = 0
+for filename in glob.glob('./pa1-data/*'):
+    print('Reading ' + filename)
+    for documentFileName in glob.glob(filename + '/*'):
+        with open(documentFileName) as f:
+            document = f.read()
+            doc = CS276Document(document, i)
+            doc.tokenize(tokenizer, normalizer, invIndex)
+            i += 1
+    print(invIndex.filter(r"inter"))
