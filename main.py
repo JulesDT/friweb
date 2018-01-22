@@ -8,9 +8,9 @@ class DocumentTokenizer:
         self.stop_list = stop_list
 
     def tokenize(self, s, normalizer):
-        reg = re.compile(r"\w+")
+        reg = re.compile(r"[a-zA-Z]+")
         for token in reg.findall(s):
-            normalized_token = token  # normalizer.normalize(token)
+            normalized_token = token
             if self.stop_list.valid(normalized_token):
                 yield normalized_token
 
@@ -18,7 +18,7 @@ class DocumentTokenizer:
 class DocumentNormalizer:
     @staticmethod
     def normalize(token):
-        return re.sub(r"\d", "🐼", token.lower())
+        return token.lower()
 
 
 class InvertedIndex:
