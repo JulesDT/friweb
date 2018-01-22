@@ -141,19 +141,6 @@ class StopList():
     def valid(self, word):
         return word not in self.stop_list
 
-
-# with open('cacm.all') as f:
-#     invIndex = InvertedIndex()
-#     stop_list = StopList('common_words')
-#     tokenizer = DocumentTokenizer(stop_list)
-#     normalizer = DocumentNormalizer()
-#     full_document = f.read()
-#     document_list = re.split('^\.I ', full_document, flags=re.MULTILINE)
-#     for document in document_list:
-#         doc = CACMDocument.from_string(document)
-#         doc.tokenize(tokenizer, normalizer, invIndex)
-#     print(invIndex.filter(r"the"))
-
 stop_list = StopList('common_words')
 tokenizer = DocumentTokenizer(stop_list)
 normalizer = DocumentNormalizer()
