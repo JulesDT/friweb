@@ -45,9 +45,9 @@ class InvertedIndex:
     def merge(self, inv_index):
         for token in inv_index.inverted_index.keys():
             if token in self.inverted_index:
-                self.inverted_index.update(inv_index.inverted_index[token])
+                self.inverted_index[token].update(inv_index.inverted_index[token])
             else:
-                self.inverted_index = inv_index.inverted_index[token]
+                self.inverted_index[token] = inv_index.inverted_index[token]
 
 
 class Document:
@@ -60,6 +60,39 @@ class Document:
             setattr(self, field + '_tokens', [word for word in tokenizer.tokenize(getattr(self, field), normalizer)])
             for token in getattr(self, field + '_tokens'):
                 inverted_index.register(token, self.id)
+
+
+class CASMBlock:
+    def __init__(self, path):
+        self.path = path
+
+    def get_next_block(self):
+        doc_list = set()
+        with open(self.path) as f:
+            full_document = f.read()
+            document_list = re.split('^\.I ', full_document, flags=re.MULTILINE)
+            for document in document_list:
+                doc = CACMDocument.from_string(document)
+                doc_list.add(doc)
+            yield doc_list
+
+
+class CS276Block:
+    def __init__(self, path):
+        self.path = path
+
+    def get_next_block(self):
+        i = 0
+        for filename in glob.glob(self.path):
+            doc_list = set()
+            print('Reading ' + filename)
+            for documentFileName in glob.glob(filename + '/*'):
+                with open(documentFileName) as f:
+                    document = f.read()
+                    doc = CS276Document(document, i)
+                    doc_list.add(doc)
+                    i += 1
+            yield doc_list
 
 
 class CACMDocument(Document):
@@ -127,16 +160,14 @@ normalizer = DocumentNormalizer()
 document_list = []
 i = 0
 invindex_list = []
-for filename in glob.glob('./pa1-data/*'):
+cs_block = CS276Block('./pa1-data/*')
+# cs_block = CASMBlock('cacm.all')
+for block in cs_block.get_next_block():
     invIndex = InvertedIndex()
     invindex_list.append(invIndex)
-    print('Reading ' + filename)
-    for documentFileName in glob.glob(filename + '/*'):
-        with open(documentFileName) as f:
-            document = f.read()
-            doc = CS276Document(document, i)
-            doc.tokenize(tokenizer, normalizer, invIndex)
-            i += 1
+    for document in block:
+        document.tokenize(tokenizer, normalizer, invIndex)
+
 for inv_index in invindex_list[1:]:
     invindex_list[0].merge(inv_index)
-print(invIndex.filter(r"inter"))
+# print(invindex_list[0].filter(r"inter"))
