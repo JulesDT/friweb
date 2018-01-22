@@ -1,0 +1,1 @@
+ee261 system identification problem usage output identme input resolution input input signal resolution timing resolution of the input signal output output signal example resolution 0.001 t 0 resolution 10 nu 2 input cos 2 pi nu t output identme input resolution function output identme input res output transferfcn input res return

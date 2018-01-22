@@ -1,0 +1,1 @@
+inproceedings fang king geaf07 author fang ji and king tracy holloway title an lfg c hinese grammar for machine use pages 144 160 booktitle proceedings of the geaf07 workshop editor king tracy holloway and bender emily m address stanford ca publisher csli year 2007 url http csli publications stanford edu geaf 2007 geaf07 toc html

@@ -1,0 +1,1 @@
+plot angular separation y n y in data fits lat 080916009_ft2_243130356_243303466 fits 86410.4 86699.6 146393 time 243216765.6 0.40000000596 grb ra dec 119.9 56.6 sc ra dec 75.6 20.2 zenith ra dec 62.0 12.1 lat in saa false grb theta 48.8353293594 from zenit 83.6481497046 info in tcanvas print file pointing png has been created press enter to continue

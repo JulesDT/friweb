@@ -1,0 +1,1 @@
+inproceedings beal_aac10 author craig e beal and j christian gerdes title experimental validation of a linear model predictive envelope controller in the presence of vehicle nonlinearities booktitle proceedings of the 2010 ifac symposium on advances in automotive control munich germany year 2010 month july organization ifac technical committee of automotive control

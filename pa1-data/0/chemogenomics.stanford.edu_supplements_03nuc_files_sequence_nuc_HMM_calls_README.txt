@@ -1,0 +1,1 @@
+yeast nucleosome hmm calls desiree tillo 11 june 2007 email desiree dot tillo at utoronto dot ca each tab delimited file contains the following 1 chromosomal coordinate midpoint of array probe 2 array probe state 0 linker 1 fuzzy 2 well positioned

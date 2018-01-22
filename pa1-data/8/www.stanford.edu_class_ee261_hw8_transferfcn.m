@@ -1,0 +1,1 @@
+ee261 system identification problem filter transfer function usage output transferfcn input res function output transferfcn input res n length input s floor n 2 floor n 1 2 res n sl 3 sh 12 n 10 h s sl 2 n 1 s sl 2 n 1 s sh 2 n h ifftshift h fout h fft input output real ifft fout return

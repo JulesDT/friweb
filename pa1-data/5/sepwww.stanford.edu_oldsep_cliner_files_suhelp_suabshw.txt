@@ -1,0 +1,1 @@
+suabshw replace header key word by its absolute value suabshw stdin stdout key offset required parameters none optional parameter key offset header key word credits cwp jack k cohen

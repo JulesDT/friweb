@@ -1,0 +1,1 @@
+lcmap list color map of root window of default screen usage lcmap

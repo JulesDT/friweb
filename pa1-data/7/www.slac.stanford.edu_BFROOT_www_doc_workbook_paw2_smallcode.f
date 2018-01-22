@@ -1,0 +1,1 @@
+function smallcode id0 implicit none include c small demonstration paw code integer smallcode id0 ij logical first data first true if first then first false call hbook1 id0 100 jpsi mass 40 2.8 3.2 0 endif do 100 ij 1 njpsi call hfill id0 100 jpsiuncmass ij 0 1 100 continue return end

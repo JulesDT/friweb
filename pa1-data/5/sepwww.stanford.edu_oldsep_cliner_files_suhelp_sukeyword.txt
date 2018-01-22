@@ -1,0 +1,1 @@
+sukeyword guide to su keywords in segy h usage sukeyword o to begin at the top of segy h sukeyword string to find string note keyword occurs in many su programs

@@ -1,0 +1,1 @@
+stanford corenlp xml output document sentences coreference resolution graph sentence tokens parse tree uncollapsed dependencies collapsed dependencies collapsed dependencies with cc processed id word lemma char begin char end pos ner normalized ner sentence headword gov

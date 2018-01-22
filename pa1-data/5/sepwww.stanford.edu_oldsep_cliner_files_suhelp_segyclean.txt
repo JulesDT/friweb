@@ -1,0 +1,1 @@
+segyclean zero out unassigned portion of header segyclean stdin stdout since foreign seg y tapes may use the unassigned portion of the trace headers and since su now uses it too this program zeros out the fields meaningful to su example segyread trmax 200 segyclean suximage credits cwp jack cohen

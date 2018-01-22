@@ -1,0 +1,1 @@
+cpusec return cpu time unix user time in seconds cpusec return cpu time in seconds input returned cpu time in seconds function prototype float cpusec void notes uses system call and include file see also cputime in this library author dave hale colorado school of mines 04 29 89

@@ -1,0 +1,1 @@
+stanford alpha kappa psi pi tau chapter home our chapter brothers initiatives events about akpsi welcome recruitment 2010 history excutive committee photos actives alumni pi tau consulting entrepreneurship leadership social service professional alumni mission statement what is akpsi history brothers copyright 2009 alpha kappa psi fraternity pi tau chapter all rights reserved

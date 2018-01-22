@@ -1,0 +1,1 @@
+chapter 7 program 6 ifndef truck_h define truck_h include vehicle h class truck public vehicle int passenger_load float payload public void init_truck int how_many 2 float max_load 24000.0 float efficiency void int passengers void endif result of execution this file cannot be executed

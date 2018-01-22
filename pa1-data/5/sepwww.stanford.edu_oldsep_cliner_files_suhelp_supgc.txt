@@ -1,0 +1,1 @@
+supgc programmed gain control apply agc like function but the same function to all traces preserving relative amplitudes spatially required parameter file name of input file optional parameters ntrscan 200 number of traces to scan for gain function lwindow 1.0 length of time window in seconds author john anderson visitor to cwp from mobil trace header fields accessed ns dt

@@ -1,0 +1,1 @@
+replace rwtvalhashmap k v hash by map k t replace rwtvalhashdictionary k v hash by map k t rwtvalhashmap and rwtvalhashdictionary are the same classes applytokeyandvalue function argument has to be replaced by containertype iterator iter container begin while iter container end function iter first iter second argument iter

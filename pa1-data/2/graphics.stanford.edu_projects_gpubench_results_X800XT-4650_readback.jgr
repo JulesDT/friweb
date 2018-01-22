@@ -1,0 +1,1 @@
+newgraph yaxis min 0 label mb sec xaxis min 0.25 min 0 no_auto_hash_labels no_auto_hash_marks label hash_label at 1 rgba hash_label at 2 bgra hash_label at 3 rgba hash_label at 4 bgra hash_label at 1.5 fixed hash_label at 3.5 float newcurve marktype xbar marksize 0.5 pts 1 120.25 2 122.62 3 121.26 4 122.96

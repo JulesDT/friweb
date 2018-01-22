@@ -1,0 +1,1 @@
+name plusminus purpose returns the ascii plus minus character category strlib calling sequence result plusminus modification history written by han wen september 1994 function plusminus return string 177b end

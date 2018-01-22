@@ -1,0 +1,1 @@
+affiliates meeting 10 pictures supri a skip to content search web pages submit home a team research support contact pictures introduction am 2010 home news affiliates meeting 2010 pictures stanford university school of earth sciences ere department contact stanford university 367 panama st stanford california 94305 ph 650 723 4744 fax 650 725 2099

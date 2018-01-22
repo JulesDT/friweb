@@ -1,0 +1,1 @@
+ezpal tab system requirements 1 you must have the pal tabs installed the pal tabs are bundled with the full installation of protege 2 you must include the template pprj project located in the protege install dir plugins edu stanford smi protegex ezpal doc directory in your project this step has to be performed before you can configure protege to show the ezpal tab

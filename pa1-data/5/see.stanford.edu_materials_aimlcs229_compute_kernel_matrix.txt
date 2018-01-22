@@ -1,0 +1,1 @@
+function k compute_kernel_matrix k x z m size x 1 n size z 1 k zeros m n for i 1 m for j 1 n k i j k x i z j end end end

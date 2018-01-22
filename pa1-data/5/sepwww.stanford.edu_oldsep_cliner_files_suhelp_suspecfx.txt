@@ -1,0 +1,1 @@
+suspecfx fourier spectrum t f of traces suspecfx infile outfile note to facilitate further processing the sampling interval in frequency and first frequency 0 are set in the output header credits cwp dave algorithm jack reformatting for su trace header fields accessed ns dt trace header fields modified ns dt trid d1 f1

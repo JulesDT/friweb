@@ -1,0 +1,1 @@
+sudiff susum suprod suquo suptdiff suptsum suptprod suptquo difference sum product quotient of two su data sets via suop2 usage sudiff file1 file2 stdout susum file1 file2 stdout etc note uses suop2 to perform the computation

@@ -1,0 +1,1 @@
+some local restaurants collaboration dinner workshop register dinner attendees dinner will be held december 15 2011 chef chu's restaurant 1067 n san antonio rd l los altos ca 94022 tel 650 948 2696 fax 650 948 0121 directions cost of dinner $45

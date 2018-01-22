@@ -1,0 +1,1 @@
+bartholomew's world paleography glossary common abbreviations enter a paleography term ampersand the et ligature ascender stroke above the headline above minim height eg the first stroke of h bart on madness aspect the general appearance of the script can be slanted or straight square oval or round autograph signature of the owner of the codex

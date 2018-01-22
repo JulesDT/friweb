@@ -1,0 +1,1 @@
+ee261 system identification problem filter transfer function usage h transferfcn s function h transferfcn s sl 3 sh 12 n 10 h s sl 2 n 1 s sl 2 n 1 s sh 2 n return

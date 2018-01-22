@@ -1,0 +1,1 @@
+sps contact home announcements events people resources contact admin contact information feel free to contact any of the officers and or rick pam with any suggestions or comments we are particularly always interested in hearing ideas for guest lecturers and social events

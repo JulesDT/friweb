@@ -1,0 +1,1 @@
+location cubberley education library location cubberley education library map of stanford university showing location of school of education building tap image to embiggen full stanford university map

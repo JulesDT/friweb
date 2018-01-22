@@ -1,0 +1,1 @@
+i don t know to ceo transforming passion to profits transforming passion into action may 1 2010 presented by stanford women in business home register schedule speakers about us partners faq swib main corporate partners

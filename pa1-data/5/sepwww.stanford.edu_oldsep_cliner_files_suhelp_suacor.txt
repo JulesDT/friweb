@@ -1,0 +1,1 @@
+suacor auto correlation suacor stdin stdout optional parms optional parameters ntout 101 odd number of time samples output norm 1 if non zero normalize maximum absolute output to 1 sym 1 if non zero produce a symmetric output from lag ntout 1 2 to lag ntout 1 2 credits cwp dave hale trace header fields accessed ns trace header fields modified ns and delrt

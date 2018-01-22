@@ -1,0 +1,1 @@
+include asm h void get_search int argc char argv switch argc case 2 dat search golden break case 6 dat search grid sscanf argv 3 le &dat dmin sscanf argv 4 le &dat dmax sscanf argv 5 d &dat nints break default dat search search_invalid return

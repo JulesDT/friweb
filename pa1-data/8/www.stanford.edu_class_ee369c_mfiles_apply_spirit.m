@@ -1,0 +1,1 @@
+function ms apply_spirit m sk ms apply_spirit m sk apply a spirit kernel to a data set m m k space data sk spirit kernel ms operator sk applied to m nx ny nc size m zero out output array ms zeros nx ny nc for each output channel for k 1 nc sum over all of the input channels for kk 1 nc ms k ms k filter2 sk kk k m kk end end end

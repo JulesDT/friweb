@@ -1,0 +1,1 @@
+inproceedings pendar geaf07 author pendar nick title soft contraints at interfaces pages 285 305 booktitle proceedings of the geaf07 workshop editor king tracy holloway and bender emily m address stanford ca publisher csli year 2007 url http csli publications stanford edu geaf 2007 geaf07 toc html

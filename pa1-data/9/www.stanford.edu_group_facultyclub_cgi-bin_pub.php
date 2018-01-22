@@ -1,0 +1,1 @@
+the stanford faculty club log in pub hours monday friday 4 30 pm 7 30 pm full bar outstanding wines monday nights all beef hot dogs & chili tuesday nights pasta primavera salad wednesday nights soup & salad thursday nights grilled steak or chicken soft tacos friday nights ben's famous chicken wings & cole slaw

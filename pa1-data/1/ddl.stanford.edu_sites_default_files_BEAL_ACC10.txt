@@ -1,0 +1,1 @@
+inproceedings beal_acc10 author craig e beal and j christian gerdes title predictive control of vehicle roll dynamics with rear wheel steering booktitle proceedings of the 2010 american control conference baltimore maryland year 2010 organization american automatic control council

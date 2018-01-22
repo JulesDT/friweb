@@ -1,0 +1,1 @@
+function mxy ab2ex a b mxy ab2ex a b or mxy ab2ex ab computes the excitation profile 2 conj a b written by john pauly 1992 c board of trustees leland stanford junior university if nargin 1 mn size a b a n 2 1 n a a 1 n 2 end mxy 2 conj a b

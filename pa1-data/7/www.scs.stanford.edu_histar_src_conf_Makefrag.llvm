@@ -1,0 +1,1 @@
+arch llvm target llvm objtype llvm cc llvm gcc emit llvm cxx llvm g++ emit llvm as llvm as ar llvm ar ld llvm ld objcopy no llvm objcopy objdump no llvm objdump nm llvm nm strip true

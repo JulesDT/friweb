@@ -1,0 +1,1 @@
+inproceedings srinivasan06someimplications author kannan srinivasan and prabal dutta and arsalan tavakoli and philip levis title some implications of low power wireless to ip networking booktitle in proc of the acm hotnets conf year 2006 pages 31 37

@@ -1,0 +1,1 @@
+clear all close all problem data t 100 planning horizon alpha 0.2 beta 1 generator cost parameters pmin 0 pmax 10 generator limits q 5 c 1 d 1 battery parameters d zeros t 1 fixed load schedule d 1 20 3 d 21 56 5 d 57 60 11 d 61 80 4 d 81 90 10 d 91 100 3 your code here

@@ -1,0 +1,1 @@
+inproceedings beal_dscc_10 author craig e beal and j christian gerdes title a m ethod for i ncorporating n onlinear t ire b ehavior into l inear m odel p redictive c ontrol for v ehicle s tability booktitle proceedings of the 2010 asme dynamic systems and control conference boston massachusetts usa organization asme dynamic systems and control division year 2010 month october

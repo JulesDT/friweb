@@ -1,0 +1,1 @@
+muri document server register muri document server register personal information first name last name email address city state zip country additional information phone fax corporate affiliation log in info username password confirm 2012 stanford university designed by atomic coffee media

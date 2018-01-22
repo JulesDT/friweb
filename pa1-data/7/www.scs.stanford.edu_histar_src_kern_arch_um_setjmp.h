@@ -1,0 +1,1 @@
+ifndef jos_machine_setjmp_h define jos_machine_setjmp_h include setjmp h struct jos_jmp_buf jmp_buf native_jb undef f_jos_setjmp define jos_setjmp buf __sigsetjmp struct jos_jmp_buf buf native_jb 0 define jos_longjmp_gccattr endif

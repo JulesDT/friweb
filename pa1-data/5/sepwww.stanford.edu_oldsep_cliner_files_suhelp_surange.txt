@@ -1,0 +1,1 @@
+surange get max and min values for non zero header entries surange stdin note gives partial results if interrupted credits sep stew cwp jack note the use of signal is inherited from bsd days and may break on some unixs it is dicy in that the responsibility for program termination is lateraled back to the main

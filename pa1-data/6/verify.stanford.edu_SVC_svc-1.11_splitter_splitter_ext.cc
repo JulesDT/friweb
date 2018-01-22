@@ -1,0 +1,1 @@
+copyright c 1995 2002 by the board of trustees of leland stanford junior university see license for details include caching h include mbtf h void init_splitter_extensions_library cerr initializing libsplitter endl caching_policy init mbtf_policy init

@@ -1,0 +1,1 @@
+the stanford faculty club log in contact the catering deparment for all event menus you can choose from our current selections or we will be pleased to create something special to suit your culinary preferences contact diane elcan at delcan stanford edu or hilary harband at hharband stanford edu so we can help start planning your next event

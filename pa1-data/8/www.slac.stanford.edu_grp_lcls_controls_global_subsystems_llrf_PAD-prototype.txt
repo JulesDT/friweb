@@ -1,0 +1,1 @@
+the board will have 256k word fifo external trigger or software trigger external of local clock transformer coupled input

@@ -1,0 +1,1 @@
+brutlag bioiunformatics group licensed software download eblocks software distribution eblocks to install the eblocks package perform the following steps unzip and untar the archive using something like tar zxvf eblocks tar gz edit settings in site defs run configure followed by make and make install

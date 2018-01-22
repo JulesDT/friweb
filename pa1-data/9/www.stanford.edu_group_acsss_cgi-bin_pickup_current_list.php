@@ -1,0 +1,1 @@
+current new students list picking up list after 2012 06 01 should you have any questions or need to update data please contact us at with email current sorting order new sort by arrival date name status no status name dept accompanies shop address reseidence airport flight arrival date comments

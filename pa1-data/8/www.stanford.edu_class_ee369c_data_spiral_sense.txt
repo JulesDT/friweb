@@ -1,0 +1,1 @@
+this file has simulated 4 coil sense data for a variable density spiral acquisition the variables are d a volume coil data set fd1 fd2 fd3 fd4 single coil data these are 1280 samples by 21 interleaves it reconstructs to a 128x128 image k k space trajectory w density correction s1 s2 s3 s4 sensitivities for the four coils

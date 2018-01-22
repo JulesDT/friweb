@@ -1,0 +1,1 @@
+pezs nl features location qualifiers protein 819 1679 note ampicillin resistance unsure 2896 2905 note unknown seq unsure 2914 2923 note unknown seq promoter 2924 4253 note camv 35s promoter peptide 4308 4337 note ala 10 linker protein 4353 5072 note egfp misc_feature 4338 4352 terminator 5095 5673 note ocs 3 unsure 5674 5683 note unknown seq

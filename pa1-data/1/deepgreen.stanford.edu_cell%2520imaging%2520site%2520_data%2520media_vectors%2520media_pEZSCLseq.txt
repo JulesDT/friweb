@@ -1,0 +1,1 @@
+pezs cl features location qualifiers unsure 2896 2905 note unknown seq unsure 2914 2923 note unknown seq promoter 2924 4253 note camv 35s promoter protein 4297 5019 note egfp peptide 5020 5049 note ala 10 linker misc_feature 5050 5118 terminator 5107 5685 note ocs 3 unsure 5686 5695 note unknown seq misc_feature 819 1679 note ampicillin resistance aaaaaaaa

@@ -1,0 +1,1 @@
+fm function f for fmin to estimate camera gamma hui li 3 7 2000 function y f x load gpval load sval p1 gpval p2 sval y abs p1 1 x p2 1 abs p1 2 x p2 2 abs p1 3 x p2 3 abs p1 4 x p2 4 abs p1 5 x p2 5 abs p1 6 x p2 6 abs p1 7 x p2 7 abs p1 8 x p2 8 abs p1 9 x p2 9 9 x fmin f 0 3 sqrt 2

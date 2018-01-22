@@ -1,0 +1,1 @@
+links the huguenard lab useful web links research laboratories of interest reimer lab coulter lab garner lab mccormick lab programs epilepsy postdoctoral training program stanford neuroscience phd program stanford neuroscience seminar series electrophysiology of the neuron

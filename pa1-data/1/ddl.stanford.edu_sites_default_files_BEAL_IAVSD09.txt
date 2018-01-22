@@ -1,0 +1,1 @@
+inproceedings beal_iavsd09 author craig e beal and j christian gerdes title rollover event prevention through predictive control of coordinated actuators booktitle proceedings of the 2009 international symposium on dynamics of vehicles on roads and tracks year 2009 organization iavsd file conference papers pdf pdf owner cbeal timestamp 2010.01 20

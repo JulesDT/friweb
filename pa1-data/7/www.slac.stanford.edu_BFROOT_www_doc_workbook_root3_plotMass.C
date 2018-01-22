@@ -1,0 +1,1 @@
+groot reset tfile f histanalysis root tcanvas myc myc myc divide 3 2 myc cd 1 hmassjpsi_on draw myc cd 2 hmassjpsi_off draw myc cd 3 hmassjpsi_sig draw myc cd 4 hmassjpsi_jpsi draw myc cd 5 hmassjpsi_bb draw myc cd 6 hmassjpsi_cont draw

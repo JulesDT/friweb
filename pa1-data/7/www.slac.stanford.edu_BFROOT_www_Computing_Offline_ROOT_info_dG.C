@@ -1,0 +1,1 @@
+void bla define function constant bg and double gaussian tf1 f1 new tf1 f1 0 gaus 1 gaus 4 0 40 f1 setparameters 10 100 30 20 800 10 10 fill histogram th1d h1 new th1d h1 40 0 40 h202 draw ncry h1 eraw 0 that's it h1 fit f1

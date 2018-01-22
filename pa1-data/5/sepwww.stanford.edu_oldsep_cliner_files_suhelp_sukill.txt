@@ -1,0 +1,1 @@
+sukill zero out traces sukill stdin stdout min count 1 required parameters min first trace to kill one based optional parameters count 1 number of traces to kill credits cwp chris liner jack k cohen trace header fields accessed ns

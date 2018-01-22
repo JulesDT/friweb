@@ -1,0 +1,1 @@
+stanford university tectonic geomorphology program description research publications people facilities curriculum internal equipment stanford university all rights reserved stanford ca 94305 650 723 2300 terms of use copyright complaints

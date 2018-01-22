@@ -1,0 +1,1 @@
+forgot password this will change your password to a new randomly generated one after entering your email address and clicking change password your new password will be set in the system and emailed to you email phpscheduleit v1 1.1

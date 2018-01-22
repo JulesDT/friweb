@@ -1,0 +1,1 @@
+suoldtonew convert existing su data to xdr format suoldtonew oldsu newsu required parameters none optional parameters none notes this program is used to convert native machine datasets to xdr based system independent format author stewart a levin mobil 1966

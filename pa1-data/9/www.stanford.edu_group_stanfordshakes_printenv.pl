@@ -1,0 +1,1 @@
+usr bin perl id printenv pl v 1.2 2007 10 24 17 41 28 jonrober exp printenv pl demo perl program that prints out environment variables print content type text plain n n foreach var sort keys env val env var val s n n g val s g print var val n

@@ -1,0 +1,1 @@
+final_grade_data m n size g svd u sigma v svd g econ extract the top dyad u1 u 1 v1 v 1 s1 sigma 1 1 normalize da m s1 v1 sum 1 u1 d m sum 1 u1 u1 compute optimal cost jopt sqrt 1 m n norm g 1 d a fro rmsgrades sqrt 1 m n norm g fro ratio jopt rmsgrades

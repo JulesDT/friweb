@@ -1,0 +1,1 @@
+this is gtbin version sciencetools 09 16 01 real 2.35 user 0.84 sys 0.23 info in tcanvas print file data grbout 080916009 080916009_lat_map png has been created

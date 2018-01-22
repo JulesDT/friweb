@@ -1,0 +1,1 @@
+from linux 2.6 23 arch i386 boot code16gcc h code16gcc h this file is include d when compiling 16 bit c code note this asm needs to be emitted before gcc emits any code depending on gcc version this requires fno unit at a time or fno toplevel reorder hopefully gcc will eventually have a real m16 option so we can drop this hack long term ifndef __assembly__ __asm code16gcc endif

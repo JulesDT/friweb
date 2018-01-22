@@ -1,0 +1,1 @@
+hours cubberley education library regular hours cubberley education library mon thurs friday saturday sunday summer quarter 10 am 7 30 pm 10 am 5 pm closed closed intersession 1 pm 5 pm 1 pm 5 pm closed closed autumn winter and spring quarters 9 am 8 pm 9 am 5 pm closed 1 pm 8 pm complete calendar of hours of operation

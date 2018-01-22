@@ -1,0 +1,1 @@
+rewriteengine on rewritecond request_uri info info html rewriterule http shakespeare stanford edu cgi bin shakes index php home r 301 l redirect index htm http shakespeare stanford edu cgi bin shakes index php home

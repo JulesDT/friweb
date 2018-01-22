@@ -1,0 +1,1 @@
+inproceedings beal_dscc09 author craig e beal and j christian gerdes title enhancing vehicle stability through model predictive control booktitle proceedings of the 2009 asme dynamic systems and controls conference year 2009 organization asme dsc

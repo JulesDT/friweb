@@ -1,0 +1,1 @@
+begin table caption normalization systematic uncertainties label tb norm_err begin tabular lcc parameter & proton & deuteron hline beam polarization & 2.4 & 2.4 target polarization & 2.5 & 4.0 dilution factor & 1.2 & 1.4 nitrogen correction & 0.4 & hline total &3 7 & 4.9 end tabular end table

@@ -1,0 +1,1 @@
+perl code fragment to decode the ascii xx hex characters that are passed to the cgi script by many browsers for special characters such as _ arg tr s 0 9a fa f 2 pack h2 $1 ge decode xx die if m a za z0 9 _ check for invalid chars return _

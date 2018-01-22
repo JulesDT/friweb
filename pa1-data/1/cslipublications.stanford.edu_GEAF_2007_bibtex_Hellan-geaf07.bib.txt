@@ -1,0 +1,1 @@
+inproceedings hellan geaf07 author hellan lars title on deep evaluation for individual computational grammars and for cross framework comparison pages 161 181 booktitle proceedings of the geaf07 workshop editor king tracy holloway and bender emily m address stanford ca publisher csli year 2007 url http csli publications stanford edu geaf 2007 geaf07 toc html

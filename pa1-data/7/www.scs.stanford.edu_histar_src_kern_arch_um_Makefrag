@@ -1,0 +1,1 @@
+makefile kern_cflags d_gnu_source 1 fno builtin g kern_arch archdir archdep c archdir ummem c archdir umcons c archdir umtime c archdir umbench c archdir shell c archdir trap c archdir main c kern dev filedisk c kern_lib lib printfmt c lib sysstring c lib cksum c lib bf60 c lib strtou64 c lib hashtable c objdir kern kernel debuginfo cc o kern_ldflags all objdir kern kernel base

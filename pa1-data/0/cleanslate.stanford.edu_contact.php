@@ -1,0 +1,1 @@
+clean slate design for the internet about clean slate stanford anouncements press stanford cleanslate contact clean slate if you are interested in broader networking research please visit openflow sofware defined networking pomi mobisocial sedcl about sponsors research people events faq contact copyright 2012 web site by tridigital inc

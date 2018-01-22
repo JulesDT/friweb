@@ -1,0 +1,1 @@
+site none longitude 0 latitude 0 device di 194rs port com channel 1 datatype solar sid stationid naa frequency 24.8 khz monitorid s 0000 fb 0000 samplerate 5

@@ -1,0 +1,1 @@
+replace rwtptrhashmap k v hash by map k t ptrless replace rwtptrhashdictionary k v hash by map k t ptrless rw method stl replacement if thekey thisptrhashmap findkeyandvalue key value if thestlcont find key thestlcont end thekey thestlcont find key first value thestlcont find key second

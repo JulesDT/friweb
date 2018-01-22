@@ -1,0 +1,1 @@
+named based virtual hosts name based virtual hosts only only name based virtual hosts are supported at this address if you reached this page your web client either did not specify a host header in its http request or no website has been configured for the name specified

@@ -1,0 +1,1 @@
+dirs i386 srpms noarch x86_64 archs i386 x86_64 kernels 2.6 14 1.1637 _fc4 all dirs for dir in dirs do createrepo dir done add kernels for arch in archs do for kvers in kernels do for pkg in afs cs ftp pub mirrors fedora linux core updates 4 arch kernel kvers do echo n adding to repo basename pkg cp pkg arch done done done

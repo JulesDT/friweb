@@ -1,0 +1,1 @@
+inproceedings miyao et al geaf07 author miyao yusuke and sagae kenji and tsujii jun ichi title towards framework independent evaluation of deep linguistic parsers pages 238 258 booktitle proceedings of the geaf07 workshop editor king tracy holloway and bender emily m address stanford ca publisher csli year 2007 url http csli publications stanford edu geaf 2007 geaf07 toc html

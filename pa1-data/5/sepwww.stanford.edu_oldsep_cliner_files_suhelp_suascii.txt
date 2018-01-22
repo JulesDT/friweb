@@ -1,0 +1,1 @@
+suascii print non zero header values and data suascii stdin ascii_file optional parameter bare 0 print headers and data bare 1 print only data bare 2 print headers only notes suwind suus provide trace selection and or subsampling with bare 1 traces are separated by a blank line credits cwp jack trace header field accessed ns

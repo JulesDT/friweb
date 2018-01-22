@@ -1,0 +1,1 @@
+databases and ir perspectives from rdbms in this talk we will discuss a couple of applications that demands better synergy between the text and the relational world based on that discussion we identify a few interesting challenges for relational databases and discuss our ongoing work on these problems as part of the data exploration research project at microsoft
