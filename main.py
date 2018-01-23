@@ -2,6 +2,31 @@
 import re
 import glob
 
+class SparseWordVector:
+    def __init__(self, v):
+        self.v = v
+        self.resetCache()
+
+    def resetCache(self):
+        self.norm = -1
+        self.cosSilimarity = 2
+
+    def norm(self):
+        if self.norm == -1:
+            self.norm = sum([v * v for k,v in self.v.items()])
+        return self.norm
+
+    def cosSilimarity(self, other):
+        if self.cosSilimarity == 2:
+            v1 = self.v
+            v2 = other.v
+            v1_dims = set(v1.keys)
+            v2_dims = set(v2.keys)
+            common_dims = v1_dims.union(v2_dims)
+            num = sum([v1[dim] * v2[dim] for dim in common_dims])
+            self.cosSilimarity = num / (self.norm() * other.norm())
+        return self.cosSilimarity
+    
 
 class DocumentTokenizer:
     def __init__(self, stop_list):
@@ -24,6 +49,7 @@ class DocumentNormalizer:
 class InvertedIndex:
     def __init__(self):
         self.inverted_index = {}
+        self.base_dict = {}
 
     def __str__(self):
         res = ""
@@ -49,6 +75,9 @@ class InvertedIndex:
             else:
                 self.inverted_index[token] = inv_index.inverted_index[token]
 
+    def build_base_vector(self):
+        self.base_dict = {k:v for v,k in enumerate(self.inverted_index.keys())}
+        print(self.base_dict)
 
 class Document:
     def __init__(self):
@@ -75,7 +104,6 @@ class CASMBlock:
                 doc = CACMDocument.from_string(document)
                 doc_list.add(doc)
             yield doc_list
-
 
 class CS276Block:
     def __init__(self, path):
@@ -158,3 +186,4 @@ for block in cs_block.get_next_block():
 for inv_index in invindex_list[1:]:
     invindex_list[0].merge(inv_index)
 # print(invindex_list[0].filter(r"inter"))
+invindex_list[0].build_base_vector()
