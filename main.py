@@ -22,7 +22,7 @@ class SparseWordVector:
             v2 = other.v
             v1_dims = set(v1.keys)
             v2_dims = set(v2.keys)
-            common_dims = v1_dims.union(v2_dims)
+            common_dims = v1_dims.intersection(v2_dims)
             num = sum([v1[dim] * v2[dim] for dim in common_dims])
             self.cosSilimarity = num / (self.norm() * other.norm())
         return self.cosSilimarity
