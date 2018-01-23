@@ -2,6 +2,7 @@
 import re
 import glob
 
+
 class SparseWordVector:
     def __init__(self, v):
         self.v = v
@@ -13,7 +14,7 @@ class SparseWordVector:
 
     def norm(self):
         if self.norm == -1:
-            self.norm = sum([v * v for k,v in self.v.items()])
+            self.norm = sum([v * v for k, v in self.v.items()])
         return self.norm
 
     def cosSilimarity(self, other):
@@ -26,7 +27,7 @@ class SparseWordVector:
             num = sum([v1[dim] * v2[dim] for dim in common_dims])
             self.cosSilimarity = num / (self.norm() * other.norm())
         return self.cosSilimarity
-    
+
 
 class DocumentTokenizer:
     def __init__(self, stop_list):
@@ -76,8 +77,9 @@ class InvertedIndex:
                 self.inverted_index[token] = inv_index.inverted_index[token]
 
     def build_base_vector(self):
-        self.base_dict = {k:v for v,k in enumerate(self.inverted_index.keys())}
+        self.base_dict = {k: v for v, k in enumerate(self.inverted_index.keys())}
         print(self.base_dict)
+
 
 class Document:
     def __init__(self):
@@ -104,6 +106,7 @@ class CASMBlock:
                 doc = CACMDocument.from_string(document)
                 doc_list.add(doc)
             yield doc_list
+
 
 class CS276Block:
     def __init__(self, path):
@@ -169,11 +172,10 @@ class StopList():
     def valid(self, word):
         return word not in self.stop_list
 
+
 stop_list = StopList('common_words')
 tokenizer = DocumentTokenizer(stop_list)
 normalizer = DocumentNormalizer()
-document_list = []
-i = 0
 invindex_list = []
 cs_block = CS276Block('./pa1-data/*')
 # cs_block = CASMBlock('cacm.all')
@@ -186,4 +188,4 @@ for block in cs_block.get_next_block():
 for inv_index in invindex_list[1:]:
     invindex_list[0].merge(inv_index)
 # print(invindex_list[0].filter(r"inter"))
-invindex_list[0].build_base_vector()
+# invindex_list[0].build_base_vector()
