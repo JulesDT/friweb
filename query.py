@@ -20,6 +20,8 @@ class QueryParser:
                     depth -= 1
                 i += 1
             print(self.string_query, i)
+            if i == len(self.string_query):  # Parenthesis around the whole expression
+                return QueryParser(self.string_query[1:-1]).parse()
             operator = self.string_query[i]
             # print(self.string_query, i, self.string_query[i + 1])
             return Query(operator, [QueryParser(self.string_query[1:i - 1]).parse(), QueryParser(self.string_query[i + 1:]).parse()])
@@ -33,7 +35,7 @@ class QueryParser:
                 return Query(value=self.string_query)
             else:
                 return Query(operator=self.string_query[i],
-                            childrens=[Query(value=self.string_query[:i]), QueryParser(self.string_query[i + 1:]).parse()])
+                             childrens=[Query(value=self.string_query[:i]), QueryParser(self.string_query[i + 1:]).parse()])
 
 
 class Query:
@@ -48,6 +50,22 @@ class Query:
             return str(self.childrens[0]) + self.operator + str(self.childrens[1])
         else:
             return self.value
+
+
+a = QueryParser('(A & B) | C')
+
+parsed = a.parse()
+
+print(parsed.childrens, parsed.operator)
+print(parsed.childrens[0].childrens, parsed.childrens[0].operator)
+print(str(parsed.childrens[0].childrens[0]), str(parsed.childrens[0].childrens[1]))
+
+a = QueryParser('A | (D & (A & B) | C)')
+
+parsed = a.parse()
+
+print(parsed.childrens, parsed.operator)
+print(parsed.childrens[0].childrens, parsed.childrens[0].operator)
 
 a = QueryParser('(A & B) | C')
 
