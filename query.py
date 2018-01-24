@@ -1,76 +1,132 @@
-possible_operators = '|&~'
+# coding=utf-8
+import re
+possible_operators = '|&'
 
 
-class QueryParser:
+class Tree:
 
-    def __init__(self, query):
-        self.string_query = query.replace(' ', '')
+    def __init__(self, parent=None):
+        self.operator = None
+        self.childrens = []
+        self.parent = parent
 
-    def parse(self):
-        if len(self.string_query) == 0:
-            return Query()
-        if self.string_query[0] == '(':
-            depth = 1
-            i = 1
-            while depth != 0:
-                char = self.string_query[i]
-                if char == '(':
-                    depth += 1
-                elif char == ')':
-                    depth -= 1
-                i += 1
-            print(self.string_query, i)
-            if i == len(self.string_query):  # Parenthesis around the whole expression
-                return QueryParser(self.string_query[1:-1]).parse()
-            operator = self.string_query[i]
-            # print(self.string_query, i, self.string_query[i + 1])
-            return Query(operator, [QueryParser(self.string_query[1:i - 1]).parse(), QueryParser(self.string_query[i + 1:]).parse()])
-        elif self.string_query[0] not in possible_operators:
-            i = 0
-            while i < len(self.string_query):
-                if self.string_query[i] in possible_operators:
-                    break
-                i += 1
-            if i == len(self.string_query):
-                return Query(value=self.string_query)
+
+def parse(tree, query_string):
+    # regex_word = re.compile(r"/^\w+/")
+    # regex_parenthesis = re.compile(r"/^\(/")
+    # regex_parenthesis_end = re.compile(r"/^\)/")
+
+    # if query_string.match(regex_word):
+    print(query_string)
+    if len(query_string) == 0:
+        return
+    query_string = query_string.replace(' ', '')
+    if query_string[0] not in '()~' + possible_operators:
+        i = 1
+        while i < len(query_string):
+            if query_string[i] in possible_operators + ')':
+                break
+            i += 1
+        if len(tree.childrens) > 0:
+            if i < len(query_string):  # I have an operator
+                if query_string[i] in possible_operators:
+                    node = Tree(tree)
+                    node.childrens.append(tree.childrens[0])
+                    node.operator = tree.operator
+                    node.childrens.append(query_string[:i])
+                    tree.operator = query_string[i]
+                    tree.childrens[0] = node
+                    parse(tree, query_string[i + 1:])
+                elif query_string[i] == ')':
+                    tree.childrens.append(query_string[:i])
+                    parse(tree.parent, query_string[i + 1:])
             else:
-                return Query(operator=self.string_query[i],
-                             childrens=[Query(value=self.string_query[:i]), QueryParser(self.string_query[i + 1:]).parse()])
-
-
-class Query:
-
-    def __init__(self, operator=None, childrens=[], value=None):
-        self.operator = operator
-        self.childrens = childrens
-        self.value = value
-
-    def __str__(self):
-        if len(self.childrens) == 2:
-            return str(self.childrens[0]) + self.operator + str(self.childrens[1])
+                tree.childrens.append(query_string)
+                return
         else:
-            return self.value
+            tree.operator = query_string[i]
+            tree.childrens.append(query_string[:i])
+            parse(tree, query_string[i + 1:])
+
+    if query_string[0] in possible_operators:
+        tree.operator = query_string[0]
+        parse(tree, query_string[1:])
+
+        # find next operator
+        # if len(children) > 0:
+        #   si j'ai un operator dans la string
+        #       je cree un nouveau node
+        #       node.children[0] = tree.children[0]
+        #       node.operator = tree.operator
+        #       node.children[1] = mot trouvé
+        #       node.parent = tree
+        #       tree.operator = operator trouvé
+        #       parse(tree, reste de la string)
+        #   sinon
+        #       je met le mot dans children[1] et basta
+        # else:
+        #   tree.operator = operator found
+        #   node.children[0] = mot trouve
+        #   parse(tree, reste_string)
+
+    if query_string[0] == '(':
+        node = Tree(tree)
+        tree.childrens.append(node)
+        parse(node, query_string[1:])
+        # create new Node
+        # if len(tree.children) > 0:
+        #   tree.children[1] = node
+        # else
+        #   tree.children[0] = node
+        # parse(node, reste_de_la_string)
+
+    if query_string[0] == ')':
+        parse(node.parent, query_string[1:])
+        # parse(node.parent, reste_de_la_string)
+
+    if query_string[0] == '~':
+        node = Tree(tree)
+        if len(tree.childrens) > 0:
+            tree.childrens[1] = node
+        else:
+            tree.childrens[0] = node
+        node.operator = '~'
+        node_child = Tree(node)
+        node.childrens.append(node_child)
+        parse(node_child, query_string[1:])
+
+        # new node
+        # if len(tree.children) > 0:
+        #   tree.children[1] = node
+        # else
+        #   tree.children[0] = node
+        # node.operator = not
+        # new node2
+        # node.children[0] = node2
+        # parse(node2, reste_de_la_string)
 
 
-a = QueryParser('(A & B) | C')
+#     def parse(tree, str):
+# if(str.match(/^\w+/)):
+#     //soit ta string est en mode mot & mat | mut
+#     tree.operator !=
+#     tree.children[1] = tree
+#     tree.parent = new Node()
 
-parsed = a.parse()
+#     tree.operator = &
+#     tree.children[0] = mot
+#     parse(tree, le reste de la string)
+#     //soit ta string est en mode mot
+#     ok
+# if(str.match(/^\(/))
+#     node = new Node()
+#     tree.children[0] = node
+#     parse(node, reste)
 
-print(parsed.childrens, parsed.operator)
-print(parsed.childrens[0].childrens, parsed.childrens[0].operator)
-print(str(parsed.childrens[0].childrens[0]), str(parsed.childrens[0].childrens[1]))
+# if(str.match( ')'))
+#     parse(tree.parent, reste)
 
-a = QueryParser('A | (D & (A & B) | C)')
+tree = Tree()
 
-parsed = a.parse()
-
-print(parsed.childrens, parsed.operator)
-print(parsed.childrens[0].childrens, parsed.childrens[0].operator)
-
-a = QueryParser('(A & B) | C')
-
-parsed = a.parse()
-
-print(parsed.childrens, parsed.operator)
-print(parsed.childrens[0].childrens, parsed.childrens[0].operator)
-print(str(parsed.childrens[0].childrens[0]), str(parsed.childrens[0].childrens[1]))
+query = "(A | D) & (B | C & E)"
+parse(tree, query)
