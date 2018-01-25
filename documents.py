@@ -93,6 +93,12 @@ class InvertedIndex:
         copy.inverted_index = {**self.inverted_index, **second_inv_index.inverted_index}
         return copy
 
+    def not_operator(self, global_inv_index):
+        copy = InvertedIndex()
+        copy.inverted_index = {key: global_inv_index.inverted_index[key]
+                               for key in (set(global_inv_index.inverted_index.keys()) - set(self.inverted_index.keys()))}
+        return copy
+
 
 class Document:
     def __init__(self):

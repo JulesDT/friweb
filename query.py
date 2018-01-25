@@ -27,6 +27,8 @@ class Tree:
             return self.childrens[0].intersect(self.childrens[1])
         if self.operator == '|':
             return self.childrens[0].union(self.childrens[1])
+        if self.operator == '~':
+            return self.childrens[0].not_operator(inv_index)
 
     def query(self, inv_index):
         #  execute all leaves
@@ -61,9 +63,12 @@ class Tree:
                     tree.childrens.append(query_string)
                     return
             else:
-                tree.operator = query_string[i]
-                tree.childrens.append(query_string[:i])
-                Tree.parse(tree, query_string[i + 1:])
+                if i < len(query_string):
+                    tree.operator = query_string[i]
+                    tree.childrens.append(query_string[:i])
+                    Tree.parse(tree, query_string[i + 1:])
+                else:
+                    tree.childrens.append(query_string)
 
         if query_string[0] in POSSIBLE_OPERATORS:
             tree.operator = query_string[0]
@@ -79,11 +84,6 @@ class Tree:
 
         if query_string[0] == '~':
             node = Tree(tree)
-            if len(tree.childrens) > 0:
-                tree.childrens[1] = node
-            else:
-                tree.childrens[0] = node
+            tree.childrens.append(node)
             node.operator = '~'
-            node_child = Tree(node)
-            node.childrens.append(node_child)
-            Tree.parse(node_child, query_string[1:])
+            Tree.parse(node, query_string[1:])
