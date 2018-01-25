@@ -57,9 +57,12 @@ class InvertedIndex:
             res += key + str(val) + "\n"
         return res
 
-    def filter(self, pattern):
+    def filter(self, pattern, strict=False):
         copy = InvertedIndex()
-        copy.inverted_index = {key: val for (key, val) in self.inverted_index.items() if re.match(pattern, key)}
+        if strict:
+            copy.inverted_index = {key: val for (key, val) in self.inverted_index.items() if pattern in key}
+        else:
+            copy.inverted_index = {pattern: self.inverted_index.get(pattern, set([]))}
         return copy
 
     def register(self, token, documentId):
@@ -78,6 +81,17 @@ class InvertedIndex:
     def build_base_vector(self):
         self.base_dict = {k: v for v, k in enumerate(self.inverted_index.keys())}
         print(self.base_dict)
+
+    def intersect(self, second_inv_index):
+        copy = InvertedIndex()
+        copy.inverted_index = {key: self.inverted_index[key]
+                               for key in (set(self.inverted_index.keys()) & set(second_inv_index.inverted_index.keys()))}
+        return copy
+
+    def union(self, second_inv_index):
+        copy = InvertedIndex()
+        copy.inverted_index = {**self.inverted_index, **second_inv_index.inverted_index}
+        return copy
 
 
 class Document:

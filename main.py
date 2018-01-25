@@ -22,5 +22,8 @@ inv_index = invindex_list[0]
 # inv_index.build_base_vector()
 
 tree = Tree(parent=None)
-Tree.parse(tree, '(inter & the) | politics')
-tree.execute(inv_index)
+Tree.parse(tree, 'inter & fax | internaltional')
+tree.query(inv_index)
+
+from IPython import embed
+embed()
