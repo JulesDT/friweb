@@ -50,6 +50,8 @@ class InvertedIndex:
     def __init__(self):
         self.inverted_index = {}
         self.base_dict = {}
+        self.doc_ids = set()
+        self.doc_vectors = {}
 
     def __str__(self):
         res = ""

@@ -2,7 +2,6 @@
 from documents import *
 from query import Tree
 
-
 stop_list = StopList('common_words')
 tokenizer = DocumentTokenizer(stop_list)
 normalizer = DocumentNormalizer()
@@ -18,6 +17,7 @@ for block in cs_block.get_next_block():
 for inv_index in invindex_list[1:]:
     invindex_list[0].merge(inv_index)
 # print(invindex_list[0].filter(r"inter"))
+
 inv_index = invindex_list[0]
 # inv_index.build_base_vector()
 
