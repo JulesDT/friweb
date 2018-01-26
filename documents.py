@@ -1,6 +1,6 @@
 import re
 import glob
-
+import math
 
 class SparseWordVector:
     def __init__(self, v):
@@ -50,6 +50,9 @@ class InvertedIndex:
     def __init__(self):
         self.inverted_index = {}
         self.base_dict = {}
+        self.doc_ids = set()
+        self.doc_vectors = {}
+        self.tf_idf = {}
 
     def __str__(self):
         res = ""
@@ -77,6 +80,15 @@ class InvertedIndex:
                 self.inverted_index[token].update(inv_index.inverted_index[token])
             else:
                 self.inverted_index[token] = inv_index.inverted_index[token]
+
+    def build_tf_idf(self):
+        idf = {termId: idf_lambda(termInvIdx) for (termId, termInvIdx) in self.inverted_index.items()}
+        for (term, termPostings) in self.inverted_index.items():
+            idf = math.log10(len(self.inverted_index) / len(termPostings))
+            self.tf_idf[term] = {
+                docId: (1 + math.log10(amount))*idf
+                for (docId, amount) in termPostings
+            }
 
     def build_base_vector(self):
         self.base_dict = {k: v for v, k in enumerate(self.inverted_index.keys())}
