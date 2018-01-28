@@ -160,7 +160,6 @@ class Document:
             for token in getattr(self, field + '_tokens'):
                 inverted_index.register(token, self.id)
 
-
 class CASMBlock:
     def __init__(self, path):
         self.path = path

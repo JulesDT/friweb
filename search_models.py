@@ -7,34 +7,55 @@ class VectorModel:
     def __init__(self):
         pass
 
-    def search(self, str, inv_index):
-        str.replace(r"[\n\s]+", " ")
-        tokens = str.split(' ')
+    def search(self, str, inv_index, tokenizer, normalizer):
+        # let us first define which w_d,t to use depending on method
+        if inv_index.method == 'tf-idf':
+            wdt = inv_index.tf_idf
+        elif inv_index.method == 'tf-idf-norm':
+            wdt = inv_index.td_idf_norm
+        elif inv_index.method == 'norm-freq':
+            wdt = inv_index.norm_freq
+        else:
+            raise Exception("VectorModel search does not handle `" + inv_index.method + "` method")
+
+        # let us build the query vector
+        gen = tokenizer.tokenize(str, normalizer)
+        tokens = [token for token in gen]
 
         print(tokens)
 
         query_vector = SparseWordVector()
         counter = collections.Counter(tokens)
         for token, amount in counter.items():
-            if token in inv_index.inverted_index:
-                idf = math.log10(len(inv_index.inverted_index) / len(inv_index.inverted_index[token]))
+            if token in wdt:
+                idf = math.log10(len(wdt) / len(wdt[token]))
                 query_vector[token] = (1 + math.log10(amount)) * idf
 
-        filtered_tf_idf = {
-            token: inv_index.tf_idf[token]
+        # then build the document vectors
+        # as we use cosine similarity, we dont have to build up the whole document vector
+        # just build the doc vector on the word dimensions of the query
+
+        # so we filter out the right part of the wdt
+
+        filtered_wdt = {
+            token: wdt[token]
             for token in tokens
-            if token in inv_index.tf_idf
+            if token in wdt
         }
 
+        # and we build up the document vectors
         doc_vectors = collections.defaultdict(SparseWordVector)
 
-        for term, posting in filtered_tf_idf.items():
+        for term, posting in filtered_wdt.items():
             for doc_id, tf_idf in posting.items():
                 doc_vectors[doc_id][term] = tf_idf
+
+        # then let us build a cos similarity result and order it by maximum similarity
 
         similarities = {doc_id: doc_vector.cosSilimarity(query_vector) for doc_id, doc_vector in doc_vectors.items()}
         sorted_doc_ids = sorted(similarities, key=lambda k:similarities[k], reverse=True)
         print(sorted_doc_ids)
+
         return sorted_doc_ids
 
 class BooleanModel:
