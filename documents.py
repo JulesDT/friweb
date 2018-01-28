@@ -2,6 +2,7 @@ import re
 import glob
 import collections
 import math
+import pickle
 
 class SparseWordVector:
     def __init__(self, v = {}):
@@ -50,9 +51,7 @@ class DocumentNormalizer:
 class InvertedIndex:
     def __init__(self):
         self.inverted_index = collections.defaultdict(lambda: collections.defaultdict(int))
-        self.base_dict = {}
-        self.doc_ids = set()
-        self.doc_vectors = {}
+        self.doc_lengths = collections.defaultdict(int)
         self.tf_idf = {}
 
     def __str__(self):
@@ -71,6 +70,7 @@ class InvertedIndex:
 
     def register(self, token, documentId):
         self.inverted_index[token][documentId] += 1
+        self.doc_lengths[documentId] += 1
 
     def merge(self, inv_index):
         for token in inv_index.inverted_index.keys():
@@ -87,12 +87,47 @@ class InvertedIndex:
                 for (docId, amount) in termPostings.items()
             }
 
-    def build_base_vector(self):
-        self.base_dict = {k: v for v, k in enumerate(self.inverted_index.keys())}
-        print(self.base_dict)
+    def build_tf_idf_norm(self):
+        for (term, termPostings) in self.inverted_index.items():
+            idf = math.log10(len(self.inverted_index) / len(termPostings))
+            self.tf_idf[term] = {
+                docId: (1 + math.log10(amount))*idf
+                for (docId, amount) in termPostings.items()
+            }
 
-    def search(self, string, model):
-        return model.search(string, self)
+    def intersect(self, second_inv_index):
+        copy = InvertedIndex()
+        copy.inverted_index = {key: self.inverted_index[key]
+                               for key in (set(self.inverted_index.keys()) & set(second_inv_index.inverted_index.keys()))}
+        return copy
+
+    def union(self, second_inv_index):
+        copy = InvertedIndex()
+        copy.inverted_index = {**self.inverted_index, **second_inv_index.inverted_index}
+        return copy
+
+    def not_operator(self, global_inv_index):
+        copy = InvertedIndex()
+        copy.inverted_index = {key: global_inv_index.inverted_index[key]
+                               for key in (set(global_inv_index.inverted_index.keys()) - set(self.inverted_index.keys()))}
+        return copy
+
+    def search(self, string, model, tokenizer, normalizer):
+        return model.search(string, self, tokenizer, normalizer)
+
+    def save(self, path):
+        with open(path, 'wb') as f:
+            toDump = {
+                "inverted_index" : self.inverted_index
+                "tf_idf" : self.tf_idf
+            }
+            pickle.dump(toDump, f, pickle.HIGHEST_PROTOCOL)
+
+    def load(self, path)
+        with open(path, 'rb') as f:
+            loaded = pickle.load(f)
+            self.tf_idf = loaded["tf_idf"]
+            self.inverted_index = loaded["inverted_index"]
 
 class Document:
     def __init__(self):
