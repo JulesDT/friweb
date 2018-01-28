@@ -1,4 +1,5 @@
 # coding=utf-8
+import re
 from documents import DocumentNormalizer, DocumentTokenizer, StopList, InvertedIndex, CASMBlock, CS276Block
 from query import Tree
 from search_models import VectorModel, BooleanModel
@@ -19,6 +20,7 @@ for block in cs_block.get_next_block():
         document.tokenize(tokenizer, normalizer, invIndex)
         doc_retrieval_block[document.id] = document.entry_string()
     retrieval_list.append(doc_retrieval_block)
+    invIndex.post_register_hook()
 
 doc_retrieval = retrieval_list[0]
 for doc_retrieval_block in retrieval_list:
@@ -29,18 +31,12 @@ for inv_index in invindex_list[1:]:
 # print(invindex_list[0].filter(r"inter"))
 
 inv_index = invindex_list[0]
-# inv_index.build_base_vector()
 
-# tree = Tree(parent=None)
-# Tree.parse(tree, '(inter & the) | politics')
-# tree.execute(inv_index)
-
-inv_index.build_tf_idf()
 
 vector_model = VectorModel()
 boolean_model = BooleanModel()
 
-doc_ids = inv_index.search("Boolean Functions Decimal", boolean_model, tokenizer, normalizer)
+doc_ids = inv_index.search("about & Boolean & Functions & Decimal", boolean_model, tokenizer, normalizer)
 # doc_ids = inv_index.search("Boolean Decimal", vector_model)
 
 print(doc_ids)
@@ -49,4 +45,4 @@ def pad(str):
 
 for i, doc_id in enumerate(doc_ids[0:min(len(doc_ids), 10)]):
     print("Result", str(i), "Document #", doc_id)
-    print(pad(doc_retreival[doc_id]))
+    print(pad(doc_retrieval[doc_id]))

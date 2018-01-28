@@ -9,6 +9,22 @@ class Tree:
         self.childrens = []
         self.parent = parent
 
+    def normalize(self, tokenizer, normalizer):
+        for i in range(len(self.childrens)):
+            if isinstance(self.childrens[i], Tree):
+                self.childrens[i].normalize(tokenizer, normalizer)
+            # This happens before anything. So isintance(self.childrens[i], set) should never happen
+            else:
+                try:
+                    self.childrens[i] = next(tokenizer.tokenize(self.childrens[i], normalizer))
+                except StopIteration:
+                    for j in range(len(self.parent.childrens)):
+                        if self.parent.childrens[j] == self:
+                            break
+                    self.parent.childrens[j] = self.childrens[i ^ 1] # 1 ^ 1 = 0, 0 ^ 1 = 1 :)
+                    # Small hack, but this prevent from having a non-normalized token make it to the layer above without being normalized
+                    self.parent.normalize(tokenizer, normalizer)
+
     def prepare(self, inv_index):
         for i in range(len(self.childrens)):
             if isinstance(self.childrens[i], Tree):
@@ -29,8 +45,9 @@ class Tree:
         if self.operator == '~':
             return inv_index - self.childrens[0]
 
-    def query(self, inv_index):
+    def query(self, inv_index, tokenizer, normalizer):
         #  execute all leaves
+        self.normalize(tokenizer, normalizer)
         self.prepare(inv_index)
         return self.execute(inv_index)
 
@@ -50,6 +67,8 @@ class Tree:
                     if query_string[i] in POSSIBLE_OPERATORS:
                         node = Tree(tree)
                         node.childrens.append(tree.childrens[0])
+                        if isinstance(tree.childrens[0], Tree):
+                            tree.childrens[0].parent = node
                         node.operator = tree.operator
                         node.childrens.append(query_string[:i])
                         tree.operator = query_string[i]

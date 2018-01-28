@@ -75,7 +75,7 @@ class InvertedIndex:
         self.inverted_index[token][documentId] += 1
         self.doc_lengths[documentId] += 1
 
-    def post_register_hook(self, token, documentId):
+    def post_register_hook(self):
         for method in self.methods:
             if method == 'tf-idf':
                 self.build_tf_idf()

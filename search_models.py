@@ -1,5 +1,6 @@
 import math
 import collections
+import re
 from documents import SparseWordVector
 from query import Tree
 
@@ -62,15 +63,11 @@ class BooleanModel:
     def __init__(self):
         pass
 
-    def search(self, str, inv_index, tokenizer, normalizer):
-        str.replace(r"[\n\s]+", " ")
-        tokens = str.split(' ')
-
-        print(" & ".join(tokens))
-
+    def search(self, search_string, inv_index, tokenizer, normalizer):
+        search_string.replace(r"[\n\s]+", " ")
         tree = Tree(parent=None)
-        Tree.parse(tree, " & ".join(tokens))
-        result = tree.query(inv_index)
+        Tree.parse(tree, search_string)
+        result = tree.query(inv_index, tokenizer, normalizer)
         # from IPython import embed
         # embed()
         sorted_doc_ids = sorted(result)
