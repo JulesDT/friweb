@@ -41,6 +41,12 @@ parser.add_argument(
     help='the collection to build the inverted index of'
 )
 
+parser.add_argument(
+    '-i',
+    '--input',
+    help = 'a string to search'
+)
+
 args = parser.parse_args()
 
 indexFile = './inv_index_' + args.collection + '_' + args.sourceweights + '.pkl'
@@ -71,7 +77,7 @@ with open(docRetreiveFile, 'rb') as f:
     print("loaded inverted index from " + indexFile)
 
     while(True):
-        user_input = input("> ")
+        user_input = args.input if args.input else input("> ")
         if(user_input == 'quit'):
             break
 
@@ -79,3 +85,6 @@ with open(docRetreiveFile, 'rb') as f:
         for i, doc_id in enumerate(doc_ids[:10]):
             print('Document ' + str(i + 1) + ' :')
             print(pad(retreive_dict[doc_id]))
+        
+        if args.input:
+            break
