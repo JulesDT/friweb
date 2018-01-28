@@ -55,7 +55,7 @@ class InvertedIndex:
         self.doc_lengths = collections.defaultdict(int)
         self.tf_idf = collections.defaultdict(lambda: collections.defaultdict(int))
         self.tf_idf_norm = collections.defaultdict(lambda: collections.defaultdict(int))
-        self.norm_freq = collections.defaultdict(int)
+        self.norm_freq = collections.defaultdict(lambda: collections.defaultdict(int))
 
     def __str__(self):
         res = ""
@@ -95,8 +95,8 @@ class InvertedIndex:
                 for token in inv_index.tf_idf_norm.keys():
                     self.tf_idf_norm[token].update(inv_index.tf_idf_norm[token])
             elif method == 'norm-freq':
-                self.norm_freq.update(inv_index.norm_freq)
-
+                for token in inv_index.norm_freq.keys():
+                    self.norm_freq[token].update(inv_index.norm_freq[token])
 
     def build_tf_idf(self):
         for (term, termPostings) in self.inverted_index.items():
@@ -120,9 +120,17 @@ class InvertedIndex:
         for term, postings in self.inverted_index.items():
             for doc_id, amt in postings.items():
                 doc_to_word_idx[doc_id][term] += amt
-        # and map this to a dict getting the most frequent term
+        # and map this to a dict getting the most frequent term for every document
+
+        most_frequent = {}
         for doc_id, words in doc_to_word_idx.items():
-            self.norm_freq[doc_id] = max(words.values())
+            most_frequent[doc_id] = max(words.values())
+
+        for (term, termPostings) in self.inverted_index.items():
+            self.norm_freq[term] = {
+                docId: amt / most_frequent[docId]
+                for (docId, amt) in termPostings.items()
+            }
 
     def search(self, string, model, tokenizer, normalizer):
         return model.search(string, self, tokenizer, normalizer)
