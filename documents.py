@@ -162,11 +162,17 @@ class Document:
         self.fields_to_tokenize = []
         self.id = ""
 
-    def tokenize(self, tokenizer, normalizer, inverted_index):
-        for field in self.fields_to_tokenize:
-            setattr(self, field + '_tokens', [word for word in tokenizer.tokenize(getattr(self, field), normalizer)])
-            for token in getattr(self, field + '_tokens'):
-                inverted_index.register(token, self.id)
+    def tokenize(self, tokenizer, normalizer, inverted_index, map_reduce=False):
+        if map_reduce:
+            for field in self.fields_to_tokenize:
+                for word in tokenizer.tokenize(getattr(self, field), normalizer):
+                    yield (self.id, word, 1)
+        else:
+            for field in self.fields_to_tokenize:
+                setattr(self, field + '_tokens', [word for word in tokenizer.tokenize(getattr(self, field), normalizer)])
+                for token in getattr(self, field + '_tokens'):
+                    inverted_index.register(token, self.id)
+        
 
 class CASMBlock:
     def __init__(self, path):

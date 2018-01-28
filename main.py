@@ -12,6 +12,7 @@ invindex_list = []
 retrieval_list = []
 # cs_block = CS276Block('./pa1-data/*')
 cs_block = CASMBlock('cacm.all')
+block_triplets_sets = []
 for block in cs_block.get_next_block():
     invIndex = InvertedIndex()
     invindex_list.append(invIndex)
@@ -21,12 +22,37 @@ for block in cs_block.get_next_block():
         doc_retrieval_block[document.id] = document.entry_string()
     retrieval_list.append(doc_retrieval_block)
     invIndex.post_register_hook()
+    
+    
+    # Map
+    # block_triplets = set()
+    # block_triplets_sets.append(block_triplets)
+    # doc_retrieval_block = {}
+    # for document in block:
+    #     for (doc_id, word, amount) in document.tokenize(tokenizer, normalizer, None, True):
+    #         block_triplets.add((doc_id, word, amount))
+    #     doc_retrieval_block[document.id] = document.entry_string()
+    # retrieval_list.append(doc_retrieval_block)
 
-doc_retrieval = retrieval_list[0]
-for doc_retrieval_block in retrieval_list:
-    doc_retrieval = {**doc_retrieval, **doc_retrieval_block}
-for inv_index in invindex_list[1:]:
-    invindex_list[0].merge(inv_index)
+# Reduce
+invIndex = InvertedIndex([])
+for block_set in block_triplets_sets:
+    for (doc_id, word, amount) in block_set:
+        if word in invIndex.inverted_index:
+            if doc_id in invIndex.inverted_index[word]:
+                invIndex.inverted_index[word][doc_id] += amount
+            else:
+                invIndex.inverted_index[word][doc_id] = amount
+        else:
+            invIndex.inverted_index[word] = {doc_id: amount}
+
+
+
+# doc_retrieval = retrieval_list[0]
+# for doc_retrieval_block in retrieval_list:
+#     doc_retrieval = {**doc_retrieval, **doc_retrieval_block}
+# for inv_index in invindex_list[1:]:
+#     invindex_list[0].merge(inv_index)
 
 # print(invindex_list[0].filter(r"inter"))
 
