@@ -1,5 +1,4 @@
 # coding=utf-8
-from documents import InvertedIndex
 POSSIBLE_OPERATORS = '|&'
 
 
@@ -14,21 +13,21 @@ class Tree:
         for i in range(len(self.childrens)):
             if isinstance(self.childrens[i], Tree):
                 self.childrens[i].prepare(inv_index)
-            elif isinstance(self.childrens[i], InvertedIndex):
+            elif isinstance(self.childrens[i], set):
                 pass
             else:
-                self.childrens[i] = inv_index.filter(self.childrens[i], strict=True)
+                self.childrens[i] = set(inv_index.inverted_index.get(self.childrens[i], {}).keys())
 
     def execute(self, inv_index):
         for i in range(len(self.childrens)):
             if isinstance(self.childrens[i], Tree):
                 self.childrens[i] = self.childrens[i].execute(inv_index)
         if self.operator == '&':
-            return self.childrens[0].intersect(self.childrens[1])
+            return self.childrens[0] & self.childrens[1]
         if self.operator == '|':
-            return self.childrens[0].union(self.childrens[1])
+            return self.childrens[0] | (self.childrens[1])
         if self.operator == '~':
-            return self.childrens[0].not_operator(inv_index)
+            return inv_index - self.childrens[0]
 
     def query(self, inv_index):
         #  execute all leaves
@@ -39,7 +38,7 @@ class Tree:
     def parse(tree, query_string):
         if len(query_string) == 0:
             return
-        query_string = query_string.replace(' ', '')
+        query_string = query_string.replace(' ', '').lower()
         if query_string[0] not in '()~' + POSSIBLE_OPERATORS:
             i = 1
             while i < len(query_string):

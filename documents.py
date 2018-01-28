@@ -1,41 +1,7 @@
 import re
 import glob
-import math
 import collections
-
-class VectorModel:
-    def __init__(self):
-        pass
-
-    def search(self, str, inv_index):
-        str.replace(r"[\n\s]+", " ")
-        tokens = str.split(' ')
-
-        print(tokens)
-
-        query_vector = SparseWordVector()
-        counter = collections.Counter(tokens)
-        for token, amount in counter.items():
-            if token in inv_index.inverted_index:
-                idf = math.log10(len(inv_index.inverted_index) / len(inv_index.inverted_index[token]))
-                query_vector[token] = (1 + math.log10(amount)) * idf
-
-        filtered_tf_idf = {
-            token: inv_index.tf_idf[token]
-            for token in tokens
-            if token in inv_index.tf_idf
-        }
-
-        doc_vectors = collections.defaultdict(SparseWordVector)
-
-        for term, posting in filtered_tf_idf.items():
-            for doc_id, tf_idf in posting.items():
-                doc_vectors[doc_id][term] = tf_idf
-
-        similarities = {doc_id: doc_vector.cosSilimarity(query_vector) for doc_id, doc_vector in doc_vectors.items()}
-        sorted_doc_ids = sorted(similarities, key=lambda k:similarities[k], reverse=True)
-
-        return sorted_doc_ids
+import math
 
 class SparseWordVector:
     def __init__(self, v = {}):
@@ -70,7 +36,7 @@ class DocumentTokenizer:
     def tokenize(self, s, normalizer):
         reg = re.compile(r"[a-zA-Z]+")
         for token in reg.findall(s):
-            normalized_token = token
+            normalized_token = normalizer.normalize(token)
             if self.stop_list.valid(normalized_token):
                 yield normalized_token
 
@@ -98,9 +64,9 @@ class InvertedIndex:
     def filter(self, pattern, strict=False):
         copy = InvertedIndex()
         if strict:
-            copy.inverted_index = {key: val for (key, val) in self.inverted_index.items() if pattern in key}
+            copy.inverted_index = {pattern: self.inverted_index.get(pattern, {})}
         else:
-            copy.inverted_index = {pattern: self.inverted_index.get(pattern, set([]))}
+            copy.inverted_index = {key: val for (key, val) in self.inverted_index.items() if pattern in key}
         return copy
 
     def register(self, token, documentId):
@@ -124,23 +90,6 @@ class InvertedIndex:
     def build_base_vector(self):
         self.base_dict = {k: v for v, k in enumerate(self.inverted_index.keys())}
         print(self.base_dict)
-
-    def intersect(self, second_inv_index):
-        copy = InvertedIndex()
-        copy.inverted_index = {key: self.inverted_index[key]
-                               for key in (set(self.inverted_index.keys()) & set(second_inv_index.inverted_index.keys()))}
-        return copy
-
-    def union(self, second_inv_index):
-        copy = InvertedIndex()
-        copy.inverted_index = {**self.inverted_index, **second_inv_index.inverted_index}
-        return copy
-
-    def not_operator(self, global_inv_index):
-        copy = InvertedIndex()
-        copy.inverted_index = {key: global_inv_index.inverted_index[key]
-                               for key in (set(global_inv_index.inverted_index.keys()) - set(self.inverted_index.keys()))}
-        return copy
 
     def search(self, string, model):
         return model.search(string, self)
