@@ -10,12 +10,16 @@ class VectorModel:
 
     def search(self, str, inv_index, tokenizer, normalizer):
         # let us first define which w_d,t to use depending on method
+
         if self.method == 'tf-idf':
             wdt = inv_index.tf_idf
+            doc_vectors = inv_index.doc_vectors_tf_idf
         elif self.method == 'tf-idf-norm':
-            wdt = inv_index.td_idf_norm
+            wdt = inv_index.tf_idf_norm
+            doc_vectors = inv_index.doc_vectors_tf_idf_norm
         elif self.method == 'norm-freq':
             wdt = inv_index.norm_freq
+            doc_vectors = inv_index.doc_vectors_norm_freq
         else:
             raise Exception("VectorModel search does not handle `" + inv_index.method + "` method")
 
@@ -31,7 +35,12 @@ class VectorModel:
         for token, amount in counter.items():
             if token in wdt:
                 idf = math.log10(len(wdt) / len(wdt[token]))
-                query_vector[token] = (1 + math.log10(amount)) * idf
+                if self.method == 'tf-idf':
+                    query_vector[token] = (1 + math.log10(amount)) * idf
+                elif self.method == 'tf-idf-norm':
+                    query_vector[token] = (1 + math.log10(amount / len(tokens))) * idf
+                elif self.method == 'norm-freq':
+                    query_vector[token] = amount / max(counter.values())
 
         # then build the document vectors
         # as we use cosine similarity, we dont have to build up the whole document vector
@@ -39,22 +48,21 @@ class VectorModel:
 
         # so we filter out the right part of the wdt
 
-        filtered_wdt = {
-            token: wdt[token]
-            for token in tokens
-            if token in wdt
+        docs = set()
+
+        for token in counter.keys():
+            if token in inv_index.inverted_index:
+                for doc_id in inv_index.inverted_index[token]:
+                    docs.add(doc_id)
+
+        filtered_doc_vectors = {
+            doc: SparseWordVector(doc_vectors[doc])
+            for doc in docs
         }
-
-        # and we build up the document vectors
-        doc_vectors = collections.defaultdict(SparseWordVector)
-
-        for term, posting in filtered_wdt.items():
-            for doc_id, tf_idf in posting.items():
-                doc_vectors[doc_id][term] = tf_idf
 
         # then let us build a cos similarity result and order it by maximum similarity
 
-        similarities = {doc_id: doc_vector.cosSilimarity(query_vector) for doc_id, doc_vector in doc_vectors.items()}
+        similarities = {doc_id: doc_vector.cosSimilarity(query_vector) for doc_id, doc_vector in filtered_doc_vectors.items()}
         sorted_doc_ids = sorted(similarities, key=lambda k:similarities[k], reverse=True)
 
         return sorted_doc_ids

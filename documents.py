@@ -7,26 +7,20 @@ import pickle
 class SparseWordVector:
     def __init__(self, v = {}):
         self.v = v
-        self.resetCache()
 
     def __setitem__(self, k, v):
         self.v[k] = v
 
-    def resetCache(self):
-        self._norm = -1
-
     def norm(self):
-        if self._norm == -1:
-            self._norm = sum([v * v for k, v in self.v.items()])
-        return self._norm
+        return math.sqrt(sum([v * v for k, v in self.v.items()]))
 
-    def cosSilimarity(self, other):
+    def cosSimilarity(self, other):
         v1 = self.v
         v2 = other.v
         v1_dims = set(v1.keys())
         v2_dims = set(v2.keys())
         common_dims = v1_dims.intersection(v2_dims)
-        num = sum([v1[dim] * v2[dim] for dim in common_dims])
+        num = sum([float(v1[dim]) * float(v2[dim]) for dim in common_dims])
         return num / (self.norm() * other.norm())
 
 
@@ -42,15 +36,40 @@ class DocumentTokenizer:
                 yield normalized_token
 
 class DocumentNormalizer:
-    @staticmethod
-    def normalize(token):
+    # def get_wordnet_pos(self, treebank_tag):
+    #     if treebank_tag.startswith('J'):
+    #         return wordnet.ADJ
+    #     elif treebank_tag.startswith('V'):
+    #         return wordnet.VERB
+    #     elif treebank_tag.startswith('N'):
+    #         return wordnet.NOUN
+    #     elif treebank_tag.startswith('R'):
+    #         return wordnet.ADV
+    #     else:
+    #         return 'n'
+
+    def __init__(self):
+        # self.lemmatizer = WordNetLemmatizer()
+        pass
+
+    def normalize(self, token):
+        # pos_t = pos_tag([token])[0][1]
+        # pos_t = self.get_wordnet_pos(pos_t)
+        # return self.lemmatizer.lemmatize(token.lower(), pos_t)
         return token.lower()
+
 
 class InvertedIndex:
     def __init__(self, methods):
         self.methods = methods
         self.inverted_index = collections.defaultdict(lambda: collections.defaultdict(int))
+
         self.doc_lengths = collections.defaultdict(int)
+
+        self.doc_vectors_tf_idf = collections.defaultdict(lambda: collections.defaultdict(int))
+        self.doc_vectors_tf_idf_norm = collections.defaultdict(lambda: collections.defaultdict(int))
+        self.doc_vectors_norm_freq = collections.defaultdict(lambda: collections.defaultdict(int))
+
         self.tf_idf = collections.defaultdict(lambda: collections.defaultdict(int))
         self.tf_idf_norm = collections.defaultdict(lambda: collections.defaultdict(int))
         self.norm_freq = collections.defaultdict(lambda: collections.defaultdict(int))
@@ -85,6 +104,7 @@ class InvertedIndex:
     def merge(self, inv_index):
         for token in inv_index.inverted_index.keys():
             self.inverted_index[token].update(inv_index.inverted_index[token])
+        self.doc_lengths.update(inv_index.doc_lengths)
         for method in self.methods:
             if method == 'tf_idf':
                 for token in inv_index.tf_idf.keys():
@@ -108,7 +128,7 @@ class InvertedIndex:
         for (term, termPostings) in self.inverted_index.items():
             idf = math.log10(len(self.inverted_index) / len(termPostings))
             self.tf_idf_norm[term] = {
-                docId: (1 + math.log10(amount))*idf
+                docId: (1 + math.log10(amount / self.doc_lengths[docId]))*idf
                 for (docId, amount) in termPostings.items()
             }
 
@@ -130,6 +150,18 @@ class InvertedIndex:
                 for (docId, amt) in termPostings.items()
             }
 
+        for doc_id, words in doc_to_word_idx.items():
+            for term in words.keys():
+                self.doc_vectors_tf_idf[doc_id][term] = self.tf_idf[term][doc_id]
+
+        for doc_id, words in doc_to_word_idx.items():
+            for term in words.keys():
+                self.doc_vectors_tf_idf_norm[doc_id][term] = self.tf_idf_norm[term][doc_id]
+
+        for doc_id, words in doc_to_word_idx.items():
+            for term in words.keys():
+                self.doc_vectors_norm_freq[doc_id][term] = self.norm_freq[term][doc_id]
+
     def search(self, string, model, tokenizer, normalizer):
         return model.search(string, self, tokenizer, normalizer)
 
@@ -143,10 +175,14 @@ class InvertedIndex:
             for method in self.methods:
                 if method == 'tf-idf':
                     toDump["tf_idf"] = dict(self.tf_idf)
+                    toDump["doc_vectors_tf_idf"] = dict(self.doc_vectors_tf_idf)
                 elif method == 'tf-idf-norm':
                     toDump["tf_idf_norm"] = dict(self.tf_idf_norm)
+                    toDump["doc_vectors_tf_idf_norm"] = dict(self.doc_vectors_tf_idf_norm)
                 elif method == 'norm-freq':
                     toDump["norm_freq"] = dict(self.norm_freq)
+                    toDump["doc_vectors_norm_freq"] = dict(self.doc_vectors_norm_freq)
+
             
             pickle.dump(toDump, f, pickle.HIGHEST_PROTOCOL)
 
