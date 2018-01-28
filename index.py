@@ -69,6 +69,7 @@ def bsbi():
             document.tokenize(tokenizer, normalizer, invIndex)
             doc_retrieval_block[document.id] = document.entry_string()
         retrieval_list.append(doc_retrieval_block)
+        invIndex.post_register_hook()
 
     doc_retrieval = retrieval_list[0]
     for doc_retrieval_block in retrieval_list:
@@ -79,9 +80,10 @@ def bsbi():
     inv_index = invindex_list[0]
 
     inv_index.save(indexOutputFile)
+    print("inverted index saved to file " + indexOutputFile)
     with open(docRetreiveFile, 'wb') as f:
         pickle.dump(doc_retrieval, f, pickle.HIGHEST_PROTOCOL)
-
+    print("retreival index saved to file " + docRetreiveFile)
 def map_reduce():
     pass
 

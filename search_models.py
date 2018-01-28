@@ -5,25 +5,26 @@ from documents import SparseWordVector
 from query import Tree
 
 class VectorModel:
-    def __init__(self):
-        pass
+    def __init__(self, method):
+        self.method = method
 
     def search(self, str, inv_index, tokenizer, normalizer):
         # let us first define which w_d,t to use depending on method
-        if inv_index.method == 'tf-idf':
+        if self.method == 'tf-idf':
             wdt = inv_index.tf_idf
-        elif inv_index.method == 'tf-idf-norm':
+        elif self.method == 'tf-idf-norm':
             wdt = inv_index.td_idf_norm
-        elif inv_index.method == 'norm-freq':
+        elif self.method == 'norm-freq':
             wdt = inv_index.norm_freq
         else:
             raise Exception("VectorModel search does not handle `" + inv_index.method + "` method")
 
+        if len(wdt) == 0:
+            raise Exception("Can not use method " + self.method + " as it is not present in input file")
+
         # let us build the query vector
         gen = tokenizer.tokenize(str, normalizer)
         tokens = [token for token in gen]
-
-        print(tokens)
 
         query_vector = SparseWordVector()
         counter = collections.Counter(tokens)
@@ -55,7 +56,6 @@ class VectorModel:
 
         similarities = {doc_id: doc_vector.cosSilimarity(query_vector) for doc_id, doc_vector in doc_vectors.items()}
         sorted_doc_ids = sorted(similarities, key=lambda k:similarities[k], reverse=True)
-        print(sorted_doc_ids)
 
         return sorted_doc_ids
 

@@ -144,10 +144,10 @@ class InvertedIndex:
 
             for method in self.methods:
                 if method == 'tf-idf':
-                    toDump["td_idf"] = dict(self.tf_idf)
+                    toDump["tf_idf"] = dict(self.tf_idf)
                 elif method == 'tf-idf-norm':
-                    toDump["td_idf_norm"] = dict(self.tf_idf_norm)
-                elif method == 'tf-idf':
+                    toDump["tf_idf_norm"] = dict(self.tf_idf_norm)
+                elif method == 'norm-freq':
                     toDump["norm_freq"] = dict(self.norm_freq)
             
             pickle.dump(toDump, f, pickle.HIGHEST_PROTOCOL)
@@ -156,6 +156,7 @@ class InvertedIndex:
         with open(path, 'rb') as f:
             loaded = pickle.load(f)
             for key in loaded.keys():
+                delattr(self, key)
                 setattr(self, key, loaded[key])
 
 class Document:
