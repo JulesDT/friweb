@@ -1,6 +1,12 @@
 import argparse
 import re
+import pickle
+import collections
+import math
 
+from documents import DocumentNormalizer, DocumentTokenizer, StopList, InvertedIndex, CASMBlock, CS276Block
+from query import Tree
+from search_models import VectorModel, BooleanModel
 
 parser = argparse.ArgumentParser(
     description='Runs a performance test on cacm collection')
@@ -31,8 +37,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-indexFile = './inv_index_' + args.collection + '_' + args.sourceweights + '.pkl'
-docRetreiveFile = './doc_retreive_' + args.collection + '_' + args.sourceweights + '.pkl'
+indexFile = './inv_index_cacm_' + args.sourceweights + '.pkl'
+docRetreiveFile = './doc_retreive_cacm_' + args.sourceweights + '.pkl'
 
 stop_list = StopList('common_words')
 tokenizer = DocumentTokenizer(stop_list)
@@ -45,14 +51,15 @@ elif args.model == 'boolean':
 else:
     raise Exception('Model ' + args.model + ' does not exist')
 
-
 class QRels:
 
     def __init__(self, path):
-        self.queries_results = {}
+        self.queries_results = collections.defaultdict(list)
         with open('./{}'.format(path), 'r') as f:
             for line in f.readlines():
                 query, document_id, _, _ = line.split()
+                query = int(query)
+                document_id = int(document_id)
                 self.queries_results[query] = self.queries_results.get(query, []) + [document_id]
 
 class PerformanceQueries:
@@ -81,4 +88,23 @@ with open(docRetreiveFile, 'rb') as f:
     inv_index.load(indexFile)
     print("loaded inverted index from " + indexFile)
 
-    # TODO
+    qrels = QRels('./qrels.text')
+    print("loaded relations from ./qrels.text")
+
+    queries = PerformanceQueries('./query.text')
+    print("loaded queries from ./query.text")
+
+    results = {qid:inv_index.search(query, model, tokenizer, normalizer)[0:20] 
+                for qid,query in queries.queries.items()}
+    right_results = collections.defaultdict(list)
+    for qid, found_docs in results.items():
+        for found_doc in found_docs:
+            if qid in qrels.queries_results:
+                if found_doc in qrels.queries_results[qid]:
+                    right_results[qid].append(found_doc)
+
+    recall = {qid: len(right_results[qid]) / len(qrels.queries_results[qid]) for qid in qrels.queries_results.keys()}
+    precision = {qid: len(right_results[qid]) / len(results[qid]) for qid in results.keys()}
+
+    print(sum(recall.values()) / len(recall))
+    print(sum(precision.values()) / len(precision))
