@@ -1,4 +1,5 @@
 import argparse
+import re
 
 
 parser = argparse.ArgumentParser(
@@ -54,6 +55,23 @@ class QRels:
                 query, document_id, _, _ = line.split()
                 self.queries_results[query] = self.queries_results.get(query, []) + [document_id]
 
+class PerformanceQueries:
+
+    def __init__(self, path):
+        with open('./{}'.format(path), 'r') as f:
+            document = f.read()
+        self.queries = {}
+        self.parse_from_string(document)
+ 
+    def parse_from_string(self, document):
+        queries_list = re.split('^\.I ', document, flags=re.MULTILINE)
+        for query in queries_list:
+            queries_part = re.split('^\.', query, flags=re.MULTILINE)
+            if len(queries_part) > 0 and queries_part[0] != '':
+                query_identifier = int(queries_part[0])
+                for element in queries_part:
+                    if element.startswith('W'):
+                        self.queries[query_identifier] = element.split('\n')[1]
 
 with open(docRetreiveFile, 'rb') as f:
     retreive_dict = pickle.load(f)
