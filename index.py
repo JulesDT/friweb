@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import argparse
+import pickle
 
 from documents import DocumentNormalizer, DocumentTokenizer, StopList, InvertedIndex, CASMBlock, CS276Block
 from query import Tree
@@ -33,17 +34,10 @@ parser.add_argument(
     help='the collection to build the inverted index of'
 )
 
-parser.add_argument(
-    '-o',
-    '--output',
-    default = 'def',
-    help='the output file, default is fine'
-)
-
 args = parser.parse_args()
 
-if args.output == 'def' :
-    args.output = './inv_index_' + args.collection + '_' + args.weights + '.pkl'
+indexOutputFile = './inv_index_' + args.collection + '_' + args.weights + '.pkl'
+docRetreiveFile = './doc_retreive_' + args.collection + '_' + args.weights + '.pkl'
 
 if args.weights == 'none' :
     args.weights = []
@@ -84,7 +78,9 @@ def bsbi():
 
     inv_index = invindex_list[0]
 
-    inv_index.save(args.output)
+    inv_index.save(indexOutputFile)
+    with open(docRetreiveFile, 'wb') as f:
+        pickle.dump(doc_retrieval, f, pickle.HIGHEST_PROTOCOL)
 
 def map_reduce():
     pass
