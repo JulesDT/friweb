@@ -138,16 +138,25 @@ class InvertedIndex:
     def save(self, path):
         with open(path, 'wb') as f:
             toDump = {
-                "inverted_index" : self.inverted_index,
-                "tf_idf" : self.tf_idf
+                "methods": self.methods,
+                "inverted_index" : self.inverted_index
             }
+
+            for method in self.methods:
+                if method == 'tf-idf':
+                    toDump["td_idf"] = self.tf_idf
+                elif method == 'tf-idf-norm':
+                    toDump["td_idf_norm"] = self.tf_idf_norm
+                elif method == 'tf-idf':
+                    toDump["norm_freq"] = self.norm_freq
+
             pickle.dump(toDump, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self, path):
         with open(path, 'rb') as f:
             loaded = pickle.load(f)
-            self.tf_idf = loaded["tf_idf"]
-            self.inverted_index = loaded["inverted_index"]
+            for key in loaded.keys():
+                setattr(self, key, loaded[key])
 
 class Document:
     def __init__(self):
