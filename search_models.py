@@ -41,7 +41,7 @@ class BooleanModel:
     def __init__(self):
         pass
 
-    def search(self, str, inv_index):
+    def search(self, str, inv_index, tokenizer, normalizer):
         str.replace(r"[\n\s]+", " ")
         tokens = str.split(' ')
 

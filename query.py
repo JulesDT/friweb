@@ -38,7 +38,7 @@ class Tree:
     def parse(tree, query_string):
         if len(query_string) == 0:
             return
-        query_string = query_string.replace(' ', '').lower()
+        query_string = query_string.replace(' ', '')
         if query_string[0] not in '()~' + POSSIBLE_OPERATORS:
             i = 1
             while i < len(query_string):

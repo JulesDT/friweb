@@ -95,35 +95,18 @@ class InvertedIndex:
                 for (docId, amount) in termPostings.items()
             }
 
-    def intersect(self, second_inv_index):
-        copy = InvertedIndex()
-        copy.inverted_index = {key: self.inverted_index[key]
-                               for key in (set(self.inverted_index.keys()) & set(second_inv_index.inverted_index.keys()))}
-        return copy
-
-    def union(self, second_inv_index):
-        copy = InvertedIndex()
-        copy.inverted_index = {**self.inverted_index, **second_inv_index.inverted_index}
-        return copy
-
-    def not_operator(self, global_inv_index):
-        copy = InvertedIndex()
-        copy.inverted_index = {key: global_inv_index.inverted_index[key]
-                               for key in (set(global_inv_index.inverted_index.keys()) - set(self.inverted_index.keys()))}
-        return copy
-
     def search(self, string, model, tokenizer, normalizer):
         return model.search(string, self, tokenizer, normalizer)
 
     def save(self, path):
         with open(path, 'wb') as f:
             toDump = {
-                "inverted_index" : self.inverted_index
+                "inverted_index" : self.inverted_index,
                 "tf_idf" : self.tf_idf
             }
             pickle.dump(toDump, f, pickle.HIGHEST_PROTOCOL)
 
-    def load(self, path)
+    def load(self, path):
         with open(path, 'rb') as f:
             loaded = pickle.load(f)
             self.tf_idf = loaded["tf_idf"]
