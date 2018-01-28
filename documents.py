@@ -139,17 +139,17 @@ class InvertedIndex:
         with open(path, 'wb') as f:
             toDump = {
                 "methods": self.methods,
-                "inverted_index" : self.inverted_index
+                "inverted_index" : dict(self.inverted_index)
             }
 
             for method in self.methods:
                 if method == 'tf-idf':
-                    toDump["td_idf"] = self.tf_idf
+                    toDump["td_idf"] = dict(self.tf_idf)
                 elif method == 'tf-idf-norm':
-                    toDump["td_idf_norm"] = self.tf_idf_norm
+                    toDump["td_idf_norm"] = dict(self.tf_idf_norm)
                 elif method == 'tf-idf':
-                    toDump["norm_freq"] = self.norm_freq
-
+                    toDump["norm_freq"] = dict(self.norm_freq)
+            
             pickle.dump(toDump, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self, path):
