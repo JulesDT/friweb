@@ -41,12 +41,10 @@ class DocumentTokenizer:
             if self.stop_list.valid(normalized_token):
                 yield normalized_token
 
-
 class DocumentNormalizer:
     @staticmethod
     def normalize(token):
         return token.lower()
-
 
 class InvertedIndex:
     def __init__(self, methods):
