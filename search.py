@@ -1,6 +1,6 @@
-
 import argparse
 import pickle
+import re
 
 from documents import DocumentNormalizer, DocumentTokenizer, StopList, InvertedIndex, CASMBlock, CS276Block
 from query import Tree
@@ -51,6 +51,10 @@ tokenizer = DocumentTokenizer(stop_list)
 normalizer = DocumentNormalizer()
 
 
+def pad(str):
+    return re.sub( '^',' '*4, str ,flags=re.MULTILINE )
+
+
 if args.model == 'vector':
     model = VectorModel(args.weights)
 elif args.model == 'boolean':
@@ -66,7 +70,12 @@ with open(docRetreiveFile, 'rb') as f:
     inv_index.load(indexFile)
     print("loaded inverted index from " + indexFile)
 
-    doc_ids = inv_index.search('computer science', model, tokenizer, normalizer)
-    for i, doc_id in enumerate(doc_ids[:10]):
-        print('Document ' + str(i + 1) + ' :')
-        print(retreive_dict[doc_id])
+    while(True):
+        user_input = input("> ")
+        if(user_input == 'quit'):
+            break
+
+        doc_ids = inv_index.search(user_input, model, tokenizer, normalizer)
+        for i, doc_id in enumerate(doc_ids[:10]):
+            print('Document ' + str(i + 1) + ' :')
+            print(pad(retreive_dict[doc_id]))
