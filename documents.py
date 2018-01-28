@@ -162,16 +162,31 @@ class Document:
         self.fields_to_tokenize = []
         self.id = ""
 
-    def tokenize(self, tokenizer, normalizer, inverted_index, map_reduce=False):
-        if map_reduce:
-            for field in self.fields_to_tokenize:
-                for word in tokenizer.tokenize(getattr(self, field), normalizer):
-                    yield (self.id, word, 1)
-        else:
-            for field in self.fields_to_tokenize:
-                setattr(self, field + '_tokens', [word for word in tokenizer.tokenize(getattr(self, field), normalizer)])
-                for token in getattr(self, field + '_tokens'):
-                    inverted_index.register(token, self.id)
+    def tokenize(self, tokenizer, normalizer, inverted_index):
+        for field in self.fields_to_tokenize:
+            setattr(self, field + '_tokens', [word for word in tokenizer.tokenize(getattr(self, field), normalizer)])
+            for token in getattr(self, field + '_tokens'):
+                inverted_index.register(token, self.id)
+
+    def map(self, tokenizer, normalizer):
+        map_data = []
+        for field in self.fields_to_tokenize:
+            for word in tokenizer.tokenize(getattr(self, field), normalizer):
+                map_data.append((word, 1))
+        return map_data
+
+    def shuffle(self, document_data):
+        shuffle_data = collections.defaultdict(list)
+        for (word, amount) in document_data:
+            shuffle_data[word].append(1)
+        return shuffle_data.items()
+
+    def reduce(self, shuffle_data):
+        reduce_data = {}
+        for (word, amount_list) in shuffle_data:
+            reduce_data[word] = sum(amount_list)
+        return reduce_data.items()
+
         
 
 class CASMBlock:

@@ -8,58 +8,28 @@ from search_models import VectorModel, BooleanModel
 stop_list = StopList('common_words')
 tokenizer = DocumentTokenizer(stop_list)
 normalizer = DocumentNormalizer()
-invindex_list = []
-retrieval_list = []
-# cs_block = CS276Block('./pa1-data/*')
-cs_block = CASMBlock('cacm.all')
-block_triplets_sets = []
+doc_retrieval = {}
+document_data_store = {}
+cs_block = CS276Block('./pa1-data/*')
+# cs_block = CASMBlock('cacm.all')
 for block in cs_block.get_next_block():
-    invIndex = InvertedIndex()
-    invindex_list.append(invIndex)
-    doc_retrieval_block = {}
+    # MapReduce
+    
     for document in block:
-        document.tokenize(tokenizer, normalizer, invIndex)
-        doc_retrieval_block[document.id] = document.entry_string()
-    retrieval_list.append(doc_retrieval_block)
-    invIndex.post_register_hook()
+        document_data = document.map(tokenizer, normalizer)
+        document_data = document.shuffle(document_data)
+        document_data = document.reduce(document_data)
+        document_data_store[document.id] = document_data
+        doc_retrieval[document.id] = document.entry_string()
     
-    
-    # Map
-    # block_triplets = set()
-    # block_triplets_sets.append(block_triplets)
-    # doc_retrieval_block = {}
-    # for document in block:
-    #     for (doc_id, word, amount) in document.tokenize(tokenizer, normalizer, None, True):
-    #         block_triplets.add((doc_id, word, amount))
-    #     doc_retrieval_block[document.id] = document.entry_string()
-    # retrieval_list.append(doc_retrieval_block)
-
-# Reduce
-invIndex = InvertedIndex([])
-for block_set in block_triplets_sets:
-    for (doc_id, word, amount) in block_set:
-        if word in invIndex.inverted_index:
-            if doc_id in invIndex.inverted_index[word]:
-                invIndex.inverted_index[word][doc_id] += amount
-            else:
-                invIndex.inverted_index[word][doc_id] = amount
-        else:
-            invIndex.inverted_index[word] = {doc_id: amount}
+# Create invIndex_element
+inv_index = InvertedIndex([])
+for doc_id, document_data in document_data_store.items():
+    for (word, amount) in document_data:
+        inv_index.inverted_index[word][doc_id] = amount
 
 
-
-# doc_retrieval = retrieval_list[0]
-# for doc_retrieval_block in retrieval_list:
-#     doc_retrieval = {**doc_retrieval, **doc_retrieval_block}
-# for inv_index in invindex_list[1:]:
-#     invindex_list[0].merge(inv_index)
-
-# print(invindex_list[0].filter(r"inter"))
-
-inv_index = invindex_list[0]
-
-
-vector_model = VectorModel()
+# vector_model = VectorModel()
 boolean_model = BooleanModel()
 
 doc_ids = inv_index.search("about & Boolean & Functions & Decimal", boolean_model, tokenizer, normalizer)
