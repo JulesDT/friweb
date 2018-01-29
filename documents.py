@@ -5,13 +5,16 @@ import math
 import pickle
 
 class SparseWordVector:
-    def __init__(self, v = {}):
-        self.v = v
+    def __init__(self):
+        self.v = {}
         self._norm = -1
 
     def __setitem__(self, k, v):
         self.v[k] = v
         self._norm = -1
+
+    def setCustomNorm(self, value):
+        self._norm = value
 
     def norm(self):
         if(self._norm == -1) :
