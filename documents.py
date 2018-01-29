@@ -61,6 +61,23 @@ class InvertedIndex:
             res += key + str(val) + "\n"
         return res
 
+    @staticmethod
+    def shuffle(inverted_index_list):
+        shuffled_data = collections.defaultdict(lambda: collections.defaultdict(list))
+        for inv_index in inverted_index_list:
+            for word in inv_index.inverted_index:
+                for doc_id in inv_index.inverted_index[word]:
+                    shuffled_data[word][doc_id].append(inv_index.inverted_index[word][doc_id])
+        return shuffled_data
+
+    @staticmethod
+    def reduce(shuffled_data, methods):
+        inv_index = InvertedIndex(methods)
+        for word in shuffled_data:
+            for doc_id in shuffled_data[word]:
+                inv_index.inverted_index[word][doc_id] = sum(shuffled_data[word][doc_id])
+        return inv_index
+
     def filter(self, pattern, strict=False):
         copy = InvertedIndex()
         if strict:
@@ -167,25 +184,6 @@ class Document:
             setattr(self, field + '_tokens', [word for word in tokenizer.tokenize(getattr(self, field), normalizer)])
             for token in getattr(self, field + '_tokens'):
                 inverted_index.register(token, self.id)
-
-    def map(self, tokenizer, normalizer):
-        map_data = []
-        for field in self.fields_to_tokenize:
-            for word in tokenizer.tokenize(getattr(self, field), normalizer):
-                map_data.append((word, 1))
-        return map_data
-
-    def shuffle(self, document_data):
-        shuffle_data = collections.defaultdict(list)
-        for (word, amount) in document_data:
-            shuffle_data[word].append(1)
-        return shuffle_data.items()
-
-    def reduce(self, shuffle_data):
-        reduce_data = {}
-        for (word, amount_list) in shuffle_data:
-            reduce_data[word] = sum(amount_list)
-        return reduce_data.items()
 
         
 

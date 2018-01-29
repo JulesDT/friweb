@@ -12,21 +12,38 @@ doc_retrieval = {}
 document_data_store = {}
 cs_block = CS276Block('./pa1-data/*')
 # cs_block = CASMBlock('cacm.all')
+cs_block = CASMBlock('cacm.all')
+inv_index_list = []
+retrieval_list = []
+methods = []
+''' 
+Map
+'''
 for block in cs_block.get_next_block():
-    # MapReduce
-    
+    doc_retrieval_block = {}
     for document in block:
-        document_data = document.map(tokenizer, normalizer)
-        document_data = document.shuffle(document_data)
-        document_data = document.reduce(document_data)
-        document_data_store[document.id] = document_data
-        doc_retrieval[document.id] = document.entry_string()
-    
-# Create invIndex_element
-inv_index = InvertedIndex([])
-for doc_id, document_data in document_data_store.items():
-    for (word, amount) in document_data:
-        inv_index.inverted_index[word][doc_id] = amount
+        invIndex = InvertedIndex(methods)
+        inv_index_list.append(invIndex)
+        document.tokenize(tokenizer, normalizer, invIndex)
+        doc_retrieval_block[document.id] = document.entry_string()
+        invIndex.post_register_hook()
+    retrieval_list.append(doc_retrieval_block)
+
+'''
+Shuffle
+'''
+shuffled_data = InvertedIndex.shuffle(inv_index_list)
+'''
+Reduce
+'''
+inv_index = InvertedIndex.reduce(shuffled_data, methods)
+'''
+EndMapReduce
+'''
+
+doc_retrieval = retrieval_list[0]
+for doc_retrieval_block in retrieval_list:
+    doc_retrieval = {**doc_retrieval, **doc_retrieval_block}
 
 
 # vector_model = VectorModel()
