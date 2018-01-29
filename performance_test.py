@@ -98,10 +98,17 @@ with open(docRetreiveFile, 'rb') as f:
     avgRecallsAtRank = []
     avgPrecisionsAtRank = []
 
-    for rank in range(1,100, 2):
-        results = {qid:inv_index.search(query, model, tokenizer, normalizer)[:rank]
-                    for qid,query in queries.queries.items()}
+    # inv_index.search(queries.queries[1], model, tokenizer, normalizer)
+    # print(qrels.queries_results[1])
+
+
+    all_results = {qid:inv_index.search(query, model, tokenizer, normalizer)
+                for qid,query in queries.queries.items()}
+
+    for rank in range(1,100):
         
+        results = {qid: ar[:rank] for qid, ar in all_results.items()}
+
         right_results = collections.defaultdict(list)
         for qid, found_docs in results.items():
             for found_doc in found_docs:

@@ -8,7 +8,7 @@ class VectorModel:
     def __init__(self, method):
         self.method = method
 
-    def search(self, str, inv_index, tokenizer, normalizer):
+    def search(self, input, inv_index, tokenizer, normalizer):
         # let us first define which w_d,t to use depending on method
 
         if self.method == 'tf-idf':
@@ -27,8 +27,9 @@ class VectorModel:
             raise Exception("Can not use method " + self.method + " as it is not present in input file")
 
         # let us build the query vector
-        gen = tokenizer.tokenize(str, normalizer)
+        gen = tokenizer.tokenize(input, normalizer)
         tokens = [token for token in gen]
+        print(tokens)
 
         query_vector = SparseWordVector()
         counter = collections.Counter(tokens)
@@ -64,6 +65,12 @@ class VectorModel:
 
         similarities = {doc_id: doc_vector.cosSimilarity(query_vector) for doc_id, doc_vector in filtered_doc_vectors.items()}
         sorted_doc_ids = sorted(similarities, key=lambda k:similarities[k], reverse=True)
+
+        for id in sorted_doc_ids[:10]:
+            print("id: " + str(id))
+            print("sim: " + str(similarities[id]))
+            cmon = set(query_vector.v.keys()).intersection(set(filtered_doc_vectors[id].v))
+            print("cmon: " + str(cmon))
 
         return sorted_doc_ids
 

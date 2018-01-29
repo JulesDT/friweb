@@ -7,12 +7,16 @@ import pickle
 class SparseWordVector:
     def __init__(self, v = {}):
         self.v = v
+        self._norm = -1
 
     def __setitem__(self, k, v):
         self.v[k] = v
+        self._norm = -1
 
     def norm(self):
-        return math.sqrt(sum([v * v for k, v in self.v.items()]))
+        if(self._norm == -1) :
+            self._norm = math.sqrt(sum([v * v for k, v in self.v.items()]))
+        return self._norm
 
     def cosSimilarity(self, other):
         v1 = self.v
@@ -20,7 +24,7 @@ class SparseWordVector:
         v1_dims = set(v1.keys())
         v2_dims = set(v2.keys())
         common_dims = v1_dims.intersection(v2_dims)
-        num = sum([float(v1[dim]) * float(v2[dim]) for dim in common_dims])
+        num = sum([v1[dim] * v2[dim] for dim in common_dims])
         return num / (self.norm() * other.norm())
 
 
@@ -261,11 +265,11 @@ class CACMDocument(Document):
             identifier = int(doc_parts[0])
             for element in doc_parts:
                 if element.startswith('T'):
-                    title = element.split('\n')[1]
+                    title = ''.join(element.split('\n')[1:])
                 elif element.startswith('W'):
-                    summary = element.split('\n')[1]
+                    summary = ''.join(element.split('\n')[1:])
                 elif element.startswith('K'):
-                    keywords = element.split('\n')[1]
+                    keywords = ''.join(element.split('\n')[1:])
         return CACMDocument(identifier, title, summary, keywords)
 
 
