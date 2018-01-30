@@ -62,6 +62,16 @@ class InvertedIndex:
         return res
 
     @staticmethod
+    def map(document_set, tokenizer, normalizer, methods):
+        inverted_index_set = set()
+        for document in document_set:
+            invIndex = InvertedIndex(methods)
+            inverted_index_set.add(invIndex)
+            document.tokenize(tokenizer, normalizer, invIndex)
+            invIndex.post_register_hook()
+        return inverted_index_set
+    
+    @staticmethod
     def shuffle(inverted_index_list):
         shuffled_data = collections.defaultdict(lambda: collections.defaultdict(list))
         for inv_index in inverted_index_list:

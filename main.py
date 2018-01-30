@@ -19,20 +19,21 @@ methods = []
 ''' 
 Map
 '''
+document_list = set()
 for block in cs_block.get_next_block():
+    document_list.update(block)
     doc_retrieval_block = {}
     for document in block:
-        invIndex = InvertedIndex(methods)
-        inv_index_list.append(invIndex)
-        document.tokenize(tokenizer, normalizer, invIndex)
         doc_retrieval_block[document.id] = document.entry_string()
-        invIndex.post_register_hook()
     retrieval_list.append(doc_retrieval_block)
-
+'''
+Map
+'''
+mapped_data = InvertedIndex.map(document_list, tokenizer, normalizer, methods)
 '''
 Shuffle
 '''
-shuffled_data = InvertedIndex.shuffle(inv_index_list)
+shuffled_data = InvertedIndex.shuffle(mapped_data)
 '''
 Reduce
 '''
