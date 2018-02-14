@@ -26,7 +26,6 @@ class VectorModel:
         # let us build the query vector
         gen = tokenizer.tokenize(input, normalizer)
         tokens = [token for token in gen]
-        print(tokens)
 
         query_vector = SparseWordVector()
         counter = collections.Counter(tokens)
@@ -67,14 +66,14 @@ class VectorModel:
         similarities = {doc_id: doc_vector.cosSimilarityCallerDims(query_vector) for doc_id, doc_vector in document_vectors.items()}
         sorted_doc_ids = sorted(similarities, key=lambda k:similarities[k], reverse=True)
 
-        for id in sorted_doc_ids[:10]:
-            print("#######")
-            print("id: " + str(id))
-            print("sim: " + str(similarities[id]))
-            cmon = set(query_vector.v.keys()).intersection(set(document_vectors[id].v.keys()))
-            print("cmon: " + str(cmon))
-            print("query: " + str(query_vector.v.keys()))
-            print("document: " + str(document_vectors[id].v.keys()))
+        # for id in sorted_doc_ids[:10]:
+        #     print("#######")
+        #     print("id: " + str(id))
+        #     print("sim: " + str(similarities[id]))
+        #     cmon = set(query_vector.v.keys()).intersection(set(document_vectors[id].v.keys()))
+        #     print("cmon: " + str(cmon))
+        #     print("query: " + str(query_vector.v.keys()))
+        #     print("document: " + str(document_vectors[id].v.keys()))
 
         return sorted_doc_ids
 

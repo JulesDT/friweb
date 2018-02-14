@@ -123,7 +123,7 @@ class InvertedIndex:
                     self.norm_freq[token].update(inv_index.norm_freq[token])
 
     def build_tf_idf(self):
-        for (term, term_postings) in self.inverted_index.items():
+        for term, term_postings in self.inverted_index.items():
             idf = math.log10(len(self.inverted_index) / len(term_postings))
             for doc_id, raw_tf in term_postings.items():
                 tf = 1 + math.log10(raw_tf)
