@@ -59,7 +59,7 @@ class VectorModel:
                         document_vectors[doc_id].v[term] = raw_tf / doc_most_frequent[doc_id]
 
         for doc_id, document_vector in document_vectors.items():
-            document_vector.setCustomNorm(math.sqrt(math.sqrt(doc_norms[doc_id])))
+            document_vector.setCustomNorm(math.sqrt(doc_norms[doc_id]))
 
         # then let us build a cos similarity result and order it by maximum similarity
 
