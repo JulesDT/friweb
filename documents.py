@@ -5,22 +5,23 @@ import math
 import pickle
 
 class SparseWordVector:
-    def __init__(self, v = {}):
-        self.v = v
-        self.resetCache()
+    def __init__(self):
+        self.v = {}
+        self._norm = -1
 
     def __setitem__(self, k, v):
         self.v[k] = v
-
-    def resetCache(self):
         self._norm = -1
 
+    def setCustomNorm(self, value):
+        self._norm = value
+
     def norm(self):
-        if self._norm == -1:
-            self._norm = sum([v * v for k, v in self.v.items()])
+        if(self._norm == -1) :
+            self._norm = math.sqrt(sum([v * v for k, v in self.v.items()]))
         return self._norm
 
-    def cosSilimarity(self, other):
+    def cosSimilarity(self, other):
         v1 = self.v
         v2 = other.v
         v1_dims = set(v1.keys())
@@ -29,6 +30,9 @@ class SparseWordVector:
         num = sum([v1[dim] * v2[dim] for dim in common_dims])
         return num / (self.norm() * other.norm())
 
+    def cosSimilarityCallerDims(self, other):
+        num = sum([self.v[dim] * other.v[dim] for dim in self.v.keys()])
+        return num / (self.norm() * other.norm())
 
 class DocumentTokenizer:
     def __init__(self, stop_list):
@@ -42,18 +46,39 @@ class DocumentTokenizer:
                 yield normalized_token
 
 class DocumentNormalizer:
-    @staticmethod
-    def normalize(token):
+    # def get_wordnet_pos(self, treebank_tag):
+    #     if treebank_tag.startswith('J'):
+    #         return wordnet.ADJ
+    #     elif treebank_tag.startswith('V'):
+    #         return wordnet.VERB
+    #     elif treebank_tag.startswith('N'):
+    #         return wordnet.NOUN
+    #     elif treebank_tag.startswith('R'):
+    #         return wordnet.ADV
+    #     else:
+    #         return 'n'
+
+    def __init__(self):
+        # self.lemmatizer = WordNetLemmatizer()
+        pass
+
+    def normalize(self, token):
+        # pos_t = pos_tag([token])[0][1]
+        # pos_t = self.get_wordnet_pos(pos_t)
+        # return self.lemmatizer.lemmatize(token.lower(), pos_t)
         return token.lower()
+
 
 class InvertedIndex:
     def __init__(self, methods):
         self.methods = methods
         self.inverted_index = collections.defaultdict(lambda: collections.defaultdict(int))
-        self.doc_lengths = collections.defaultdict(int)
-        self.tf_idf = collections.defaultdict(lambda: collections.defaultdict(int))
-        self.tf_idf_norm = collections.defaultdict(lambda: collections.defaultdict(int))
-        self.norm_freq = collections.defaultdict(lambda: collections.defaultdict(int))
+
+        self.doc_most_frequent = collections.defaultdict(int)
+
+        self.doc_norms_tf_idf = collections.defaultdict(float)
+        self.doc_norms_tf_idf_norm = collections.defaultdict(float)
+        self.doc_norms_norm_freq = collections.defaultdict(float)
 
     def __str__(self):
         res = ""
@@ -98,7 +123,6 @@ class InvertedIndex:
 
     def register(self, token, documentId):
         self.inverted_index[token][documentId] += 1
-        self.doc_lengths[documentId] += 1
 
     def post_register_hook(self):
         for method in self.methods:
@@ -109,9 +133,11 @@ class InvertedIndex:
             elif method == 'norm-freq':
                 self.build_norm_freq()
 
+    # TODO
     def merge(self, inv_index):
         for token in inv_index.inverted_index.keys():
             self.inverted_index[token].update(inv_index.inverted_index[token])
+        self.doc_lengths.update(inv_index.doc_lengths)
         for method in self.methods:
             if method == 'tf_idf':
                 for token in inv_index.tf_idf.keys():
@@ -124,20 +150,20 @@ class InvertedIndex:
                     self.norm_freq[token].update(inv_index.norm_freq[token])
 
     def build_tf_idf(self):
-        for (term, termPostings) in self.inverted_index.items():
-            idf = math.log10(len(self.inverted_index) / len(termPostings))
-            self.tf_idf[term] = {
-                docId: (1 + math.log10(amount))*idf
-                for (docId, amount) in termPostings.items()
-            }
+        for term, term_postings in self.inverted_index.items():
+            idf = math.log10(len(self.inverted_index) / len(term_postings))
+            for doc_id, raw_tf in term_postings.items():
+                tf = 1 + math.log10(raw_tf)
+                tfidf = tf * idf
+                self.doc_norms_tf_idf[doc_id] += tfidf ** 2
 
     def build_tf_idf_norm(self):
-        for (term, termPostings) in self.inverted_index.items():
-            idf = math.log10(len(self.inverted_index) / len(termPostings))
-            self.tf_idf_norm[term] = {
-                docId: (1 + math.log10(amount))*idf
-                for (docId, amount) in termPostings.items()
-            }
+        for (term, term_postings) in self.inverted_index.items():
+            idf = math.log10(len(self.inverted_index) / len(term_postings))
+            for doc_id, raw_tf in term_postings.items():
+                tf = raw_tf
+                tfidf = tf * idf
+                self.doc_norms_tf_idf_norm[doc_id] += tfidf ** 2
 
     def build_norm_freq(self):
         # let us basically invert the inverted index ><
@@ -147,15 +173,11 @@ class InvertedIndex:
                 doc_to_word_idx[doc_id][term] += amt
         # and map this to a dict getting the most frequent term for every document
 
-        most_frequent = {}
         for doc_id, words in doc_to_word_idx.items():
-            most_frequent[doc_id] = max(words.values())
+            self.doc_most_frequent[doc_id] = max(words.values())
+            for word, raw_tf in words.items():
+                self.doc_norms_norm_freq[doc_id] += (raw_tf / self.doc_most_frequent[doc_id]) ** 2
 
-        for (term, termPostings) in self.inverted_index.items():
-            self.norm_freq[term] = {
-                docId: amt / most_frequent[docId]
-                for (docId, amt) in termPostings.items()
-            }
 
     def search(self, string, model, tokenizer, normalizer):
         return model.search(string, self, tokenizer, normalizer)
@@ -169,11 +191,12 @@ class InvertedIndex:
 
             for method in self.methods:
                 if method == 'tf-idf':
-                    toDump["tf_idf"] = dict(self.tf_idf)
+                    toDump["doc_norms_tf_idf"] = dict(self.doc_norms_tf_idf)
                 elif method == 'tf-idf-norm':
-                    toDump["tf_idf_norm"] = dict(self.tf_idf_norm)
+                    toDump["doc_norms_tf_idf_norm"] = dict(self.doc_norms_tf_idf_norm)
                 elif method == 'norm-freq':
-                    toDump["norm_freq"] = dict(self.norm_freq)
+                    toDump["doc_norms_norm_freq"] = dict(self.doc_norms_norm_freq)
+                    toDump["doc_most_frequent"] = dict(self.doc_most_frequent)
             
             pickle.dump(toDump, f, pickle.HIGHEST_PROTOCOL)
 
@@ -254,11 +277,11 @@ class CACMDocument(Document):
             identifier = int(doc_parts[0])
             for element in doc_parts:
                 if element.startswith('T'):
-                    title = element.split('\n')[1]
+                    title = ''.join(element.split('\n')[1:])
                 elif element.startswith('W'):
-                    summary = element.split('\n')[1]
+                    summary = ''.join(element.split('\n')[1:])
                 elif element.startswith('K'):
-                    keywords = element.split('\n')[1]
+                    keywords = ''.join(element.split('\n')[1:])
         return CACMDocument(identifier, title, summary, keywords)
 
 

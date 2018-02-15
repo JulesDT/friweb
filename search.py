@@ -83,7 +83,7 @@ with open(docRetreiveFile, 'rb') as f:
 
         doc_ids = inv_index.search(user_input, model, tokenizer, normalizer)
         for i, doc_id in enumerate(doc_ids[:10]):
-            print('Document ' + str(i + 1) + ' :')
+            print('Document ' + str(i + 1) + ' : #' + str(doc_id))
             print(pad(retreive_dict[doc_id]))
         
         if args.input:
