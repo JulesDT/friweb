@@ -3,15 +3,16 @@
 ## Description
 
 This project is built over two main modules
- - An indexing module, enabling to index CACM or CS276 collection, using BSBI or Map-Reduce indexing methods
- - A search module, enabling to search string in CACM or CS276 collections in interactive mode or as command parameter
+* An indexing module, enabling to index CACM or CS276 collection, using BSBI or Map-Reduce indexing methods
+* A search module, enabling to search string in CACM or CS276 collections in interactive mode or as command parameter
 
-Different search methods available :
- - Boolean Search
- - Vectorial Search
-   - Using `tf-idf` weights (tf-idf)
-   - Using `tf-idf-norm` weights (normalized tf-idf)
-   - Using `norm-freq` weights (normalized frequencies)
+Different search methods are available :
+
+* Boolean Search
+* Vectorial Search
+    * Using 'tf-idf' weights (tf-idf)
+    * Using 'tf-idf-norm' weights (normalized tf-idf)
+    * Using 'norm-freq' weights (normalized frequencies)
 
 You will find more detailed results and statistics in [this document](./rapport.md)
 
@@ -34,7 +35,7 @@ We have chosen to implement :
 
  - [index.py](./index.py) : allows to index collections, more is usage section
  - [search.py](./search.py) : allows to search in built indexes (stored in files)
- - [document.py](./document.py) : contains inverted index, sparse word vectors and document definitions
+ - [documents.py](./documents.py) : contains inverted index, sparse word vectors and document definitions
  - [performance_test.py](./performance_test.py) : used to test model performances
  - [rapport.md](./rapport.md) : contains performance results
  - [query.py](./query.py) : contains boolean expression parser
