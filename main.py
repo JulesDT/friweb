@@ -10,10 +10,10 @@ tokenizer = DocumentTokenizer(stop_list)
 normalizer = DocumentNormalizer()
 invindex_list = []
 retrieval_list = []
-# cs_block = CS276Block('./pa1-data/*')
-cs_block = CASMBlock('cacm.all')
+cs_block = CS276Block('./pa1-data/*')
+# cs_block = CASMBlock('cacm.all')
 for block in cs_block.get_next_block():
-    invIndex = InvertedIndex()
+    invIndex = InvertedIndex([])
     invindex_list.append(invIndex)
     doc_retrieval_block = {}
     for document in block:
