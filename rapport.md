@@ -36,6 +36,18 @@ On CS278: vocabulary size of **151 350** and **7 582 480** tokens
 With the values obtained with the CACM collection, for a million token, we end up with a vocabulary size of **64 920**
 With the values obtained with the CS@76 collection, for a million token, we end up with a vocabulary size of **41 023**
 
+### Question 5
+
+#### CACM
+
+![CACM-frequency-rank](./freq_rank_cacm.png)
+![CACM-frequency-rank-log](./freq_rank_cacm.png)
+
+#### CS276
+
+![CS276-frequency-rank](./freq_rank_cs276.png)
+![CS276-frequency-rank-log](./freq_rank_log_cs276.png)
+
 ## Performance
 
 Performance can be tested running `python3 performance_test.py`
