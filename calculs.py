@@ -1,4 +1,5 @@
 import math, collections
+import matplotlib.pyplot as plt
 from functools import reduce
 from documents import DocumentNormalizer, DocumentTokenizer, StopList, InvertedIndex, CASMBlock, CS276Block
 
@@ -58,11 +59,11 @@ def generate_indexes(data, split_ratio=1):
     return inv_index
 
 def heap_law(inverted_index, half_inverted_index):
-    T1 = sum([inverted_index[word][doc_id] for word in inverted_index for doc_id in inverted_index[word]])
-    T2 = sum([half_inverted_index[word][doc_id] for word in half_inverted_index for doc_id in half_inverted_index[word]])
+    T1 = float(sum([inverted_index[word][doc_id] for word in inverted_index for doc_id in inverted_index[word]]))
+    T2 = float(sum([half_inverted_index[word][doc_id] for word in half_inverted_index for doc_id in half_inverted_index[word]]))
 
-    M1 = len(inverted_index)
-    M2 = len(half_inverted_index)
+    M1 = float(len(inverted_index))
+    M2 = float(len(half_inverted_index))
 
     b = math.log(M2/M1)/math.log(T2/T1)
     k = (M2 - M1)/(T2**b - T1**b)
@@ -76,11 +77,43 @@ def frequency_rank(inverted_index):
     }
     total_number_of_tokens = sum(numbers.values())
     sorted_values = sorted(numbers.items(), key=lambda x: x[1], reverse=True)
-    return [(word, value/total_number_of_tokens) for word, value in sorted_values]
+    return [(word, float(value*100)/total_number_of_tokens) for word, value in sorted_values]
 
+def plot_freq_rank(ranked_frequencies, collection):
+    plt.figure(1)
+    plt.margins(0.1, 0.1)
+    plt.plot(
+        range(1, len(ranked_frequencies) + 1),
+        [freq[1] for freq in ranked_frequencies],
+        label="{}".format(collection))
+    plt.title("Frequency - Rank")
+    plt.legend()
+    plt.xlabel('Rank')
+    plt.ylabel('Frequency')
+    plt.savefig('./freq_rank_{}.png'.format(collection))
+
+    plt.gcf().clear()
+
+    plt.figure(2)
+    plt.margins(0.1, 0.1)
+    plt.plot(
+        [math.log(i) for i in range(1, len(ranked_frequencies) + 1)],
+        [math.log(freq[1]) for freq in ranked_frequencies],
+        label="{}".format(collection))
+    plt.title("log(Frequency) - log(Rank)")
+    plt.legend()
+    plt.xlabel('Rank')
+    plt.ylabel('Frequency')
+    plt.savefig('./freq_rank_log_{}.png'.format(collection))
+
+    plt.gcf().clear()
+
+    
 
 print("CACM")
 inv_index = generate_indexes('cacm')
+freqs = frequency_rank(inv_index.inverted_index)
+plot_freq_rank(freqs, 'cacm')
 half_inv_index = generate_indexes('cacm', split_ratio=2)
 b, k = heap_law(inv_index.inverted_index, half_inv_index.inverted_index)
 print("Tokens: Full -> {}, 1/2 -> {}".format(
@@ -95,6 +128,8 @@ print("b: {}, k: {}".format(b, k))
 
 print("cs276")
 inv_index = generate_indexes('cs276')
+freqs_cs276 = frequency_rank(inv_index.inverted_index)
+plot_freq_rank(freqs_cs276, 'cs276')
 half_inv_index = generate_indexes('cs276', split_ratio=2)
 b, k = heap_law(inv_index.inverted_index, half_inv_index.inverted_index)
 print("Tokens: Full -> {}, 1/2 -> {}".format(
