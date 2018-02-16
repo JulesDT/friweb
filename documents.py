@@ -137,7 +137,7 @@ class InvertedIndex:
     def merge(self, inv_index):
         for token in inv_index.inverted_index.keys():
             self.inverted_index[token].update(inv_index.inverted_index[token])
-        self.doc_lengths.update(inv_index.doc_lengths)
+        self.doc_most_frequent.update(inv_index.doc_most_frequent)
         for method in self.methods:
             if method == 'tf_idf':
                 for token in inv_index.tf_idf.keys():
@@ -153,7 +153,7 @@ class InvertedIndex:
         for term, term_postings in self.inverted_index.items():
             idf = math.log10(len(self.inverted_index) / len(term_postings))
             for doc_id, raw_tf in term_postings.items():
-                tf = 1 + math.log10(raw_tf)
+                tf = raw_tf
                 tfidf = tf * idf
                 self.doc_norms_tf_idf[doc_id] += tfidf ** 2
 
@@ -161,7 +161,7 @@ class InvertedIndex:
         for (term, term_postings) in self.inverted_index.items():
             idf = math.log10(len(self.inverted_index) / len(term_postings))
             for doc_id, raw_tf in term_postings.items():
-                tf = raw_tf
+                tf = 1 + math.log10(raw_tf)
                 tfidf = tf * idf
                 self.doc_norms_tf_idf_norm[doc_id] += tfidf ** 2
 
