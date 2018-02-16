@@ -33,9 +33,9 @@ class VectorModel:
             if token in inv_index.inverted_index:
                 idf = math.log10(len(inv_index.inverted_index) / len(inv_index.inverted_index[token]))
                 if self.method == 'tf-idf':
-                    query_vector.v[token] = (1 + math.log10(amount)) * idf
-                elif self.method == 'tf-idf-norm':
                     query_vector.v[token] = amount * idf
+                elif self.method == 'tf-idf-norm':
+                    query_vector.v[token] = (1 + math.log10(amount)) * idf
                 elif self.method == 'norm-freq':
                     query_vector.v[token] = amount / max(counter.values())
 
@@ -52,9 +52,9 @@ class VectorModel:
                 idf = math.log10(len(inv_index.inverted_index) / len(postings))
                 for doc_id, raw_tf in postings.items():
                     if self.method == 'tf-idf':
-                        document_vectors[doc_id].v[term] = (1 + math.log10(raw_tf)) * idf
-                    elif self.method == 'tf-idf-norm':
                         document_vectors[doc_id].v[term] = raw_tf * idf
+                    elif self.method == 'tf-idf-norm':
+                        document_vectors[doc_id].v[term] = (1 + math.log10(raw_tf)) * idf
                     elif self.method == 'norm-freq':
                         document_vectors[doc_id].v[term] = raw_tf / doc_most_frequent[doc_id]
 

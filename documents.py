@@ -106,21 +106,13 @@ class InvertedIndex:
             elif method == 'norm-freq':
                 self.build_norm_freq()
 
-    # TODO
     def merge(self, inv_index):
         for token in inv_index.inverted_index.keys():
             self.inverted_index[token].update(inv_index.inverted_index[token])
         self.doc_most_frequent.update(inv_index.doc_most_frequent)
-        for method in self.methods:
-            if method == 'tf_idf':
-                for token in inv_index.tf_idf.keys():
-                    self.tf_idf[token].update(inv_index.tf_idf[token])
-            elif method == 'tf-idf-norm':
-                for token in inv_index.tf_idf_norm.keys():
-                    self.tf_idf_norm[token].update(inv_index.tf_idf_norm[token])
-            elif method == 'norm-freq':
-                for token in inv_index.norm_freq.keys():
-                    self.norm_freq[token].update(inv_index.norm_freq[token])
+        self.doc_norms_tf_idf.update(inv_index.doc_norms_tf_idf)
+        self.doc_norms_tf_idf_norm.update(inv_index.doc_norms_tf_idf_norm)
+        self.doc_norms_norm_freq.update(inv_index.doc_norms_norm_freq)
 
     def build_tf_idf(self):
         for term, term_postings in self.inverted_index.items():

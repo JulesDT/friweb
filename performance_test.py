@@ -10,6 +10,8 @@ from documents import DocumentNormalizer, DocumentTokenizer, StopList, InvertedI
 from query import Tree
 from search_models import VectorModel, BooleanModel
 
+MAX_RANK = 200
+
 parser = argparse.ArgumentParser(
     description='Runs a performance test on cacm collection')
 
@@ -120,20 +122,9 @@ def n_points_interpolate(qrecalls, qprecisions, n):
 
     return qrecalls_res, qprecisions_res
 
-
-def build_precision_recall(inv_index, queries, qrels, N):
-    # plot a curve for each model
+def search(inv_index, queries):
+    
     for model in models:
-        N = 20
-
-        # stores raw recalls and precision query_id -> list
-        recalls = {}
-        precisions = {}
-
-        # stores interpolated recalls an precisions query_id -> list
-        recalls_interpolated = {}
-        precisions_interpolated = {}
-
         # run all queries first
         @timeit
         def run_queries():
@@ -143,10 +134,15 @@ def build_precision_recall(inv_index, queries, qrels, N):
             }
 
         all_results, elapsed_time = run_queries()
+        yield model, all_results, elapsed_time
 
-        print(
-            str(len(all_results)) + " queries ran in " + str(elapsed_time) +
-            "ms using weights " + model.method)
+def build_recall_precision(inv_index, queries, qrels, search_results):
+    # plot a curve for each model
+    for model, all_results, elapsed_time in search_results:
+
+        # stores raw recalls and precision query_id -> list
+        recalls = {}
+        precisions = {}
 
         # build raw recall and precision
         for qid, ar in all_results.items():
@@ -154,7 +150,7 @@ def build_precision_recall(inv_index, queries, qrels, N):
                 recalls[qid] = []
                 precisions[qid] = []
                 # limit the rank to max 200
-                for rank in range(1, min(len(ar), 200)):
+                for rank in range(1, min(len(ar), MAX_RANK)):
                     results = ar[:rank]
                     right_results = [
                         result for result in results
@@ -168,6 +164,15 @@ def build_precision_recall(inv_index, queries, qrels, N):
 
                     recalls[qid].append(recall)
                     precisions[qid].append(precision)
+
+        yield model, recalls, precisions
+
+
+def interpolated_recall_precision(inv_index, queries, qrels, N, generatedRecallPrecisions):
+    for model, recalls, precisions in generatedRecallPrecisions:
+        # stores interpolated recalls an precisions query_id -> list
+        recalls_interpolated = {}
+        precisions_interpolated = {}
 
         # keep maximum precision for lower rank (interpolation)
         for qid, qprecisions in precisions.items():
@@ -220,9 +225,11 @@ def build_f_measure(recalls, precisions, beta):
 
 def build_e_measure(recalls, precisions, beta):
     recalls, f_measures = build_f_measure(recalls, precisions, beta)
-    e_measures = list(map(lambda x: 1 - x, f_measures))
+    e_measures = [1 - f_measure for f_measure in f_measures]
     return recalls, e_measures
 
+def build_average_precision(qrels):
+    pass
 
 with open(docRetreiveFile, 'rb') as f:
     retreive_dict = pickle.load(f)
@@ -238,12 +245,20 @@ with open(docRetreiveFile, 'rb') as f:
     queries = PerformanceQueries('./query.text')
     print("loaded queries from ./query.text")
 
-    recall_precision_curves = [(model, recall, precision) for (
-        model, recall,
-        precision) in build_precision_recall(inv_index, queries, qrels, 20)]
+    search_results = []
 
+    for model, all_results, elapsed_time in search(inv_index, queries):
+        print(
+            str(len(all_results)) + " queries ran in " + str(elapsed_time) +
+            "ms using weights " + model.method)
+        search_results.append((model, all_results, elapsed_time))
+
+    recall_precision_curves = list(build_recall_precision(inv_index, queries, qrels, search_results))
+    interpolated_recall_precision = list(interpolated_recall_precision(inv_index, queries, qrels, 20, recall_precision_curves))
+
+    # recall precision
     plt.figure(0)
-    for model, avg_recalls_interpolated, avg_precisions_interpolated in recall_precision_curves:
+    for model, avg_recalls_interpolated, avg_precisions_interpolated in interpolated_recall_precision:
         plt.plot(
             avg_recalls_interpolated,
             avg_precisions_interpolated,
@@ -252,12 +267,13 @@ with open(docRetreiveFile, 'rb') as f:
     plt.legend()
     plt.xlabel('recall')
     plt.ylabel('precision')
-    plt.savefig('./recallPrecision.png')
+    plt.savefig('./recall-precision.png')
 
     print('Recall precision curves drawn in ./recall-precision.png')
 
+    # F measure
     plt.figure(1)
-    for model, avg_recalls_interpolated, avg_precisions_interpolated in recall_precision_curves:
+    for model, avg_recalls_interpolated, avg_precisions_interpolated in interpolated_recall_precision:
         avg_recalls_interpolated, avg_f_measure_interpolated = build_f_measure(
             avg_recalls_interpolated, avg_precisions_interpolated, 1)
         plt.plot(
@@ -272,8 +288,9 @@ with open(docRetreiveFile, 'rb') as f:
 
     print('F measure curve drawn in ./f-measure.png')
 
+    # E measure
     plt.figure(2)
-    for model, avg_recalls_interpolated, avg_precisions_interpolated in recall_precision_curves:
+    for model, avg_recalls_interpolated, avg_precisions_interpolated in interpolated_recall_precision:
         avg_recalls_interpolated, avg_e_measure_interpolated = build_e_measure(
             avg_recalls_interpolated, avg_precisions_interpolated, 1)
         plt.plot(
@@ -287,3 +304,30 @@ with open(docRetreiveFile, 'rb') as f:
     plt.savefig('./e-measure.png')
 
     print('E measure curve drawn in ./e-measure.png')
+
+    # R measure
+    for model, recalls, precisions in recall_precision_curves:
+        r_measures = []
+        for qid, qrecalls in recalls.items():
+            R = qrels.queries_results[qid]
+            r_measures.append(qrecalls[qid])
+        print('R measure for model ' + model.method + ' : ' + str(sum(r_measures) / len(r_measures)))
+
+    # Mean average precision
+    for (model, all_results, et),(model_, recalls, precisions) in zip(search_results, recall_precision_curves):
+        avg_mean_precision_build = []
+        for qid, qexpected in qrels.queries_results.items():
+            if(len(qexpected) > 0):
+                q_mean_precisions_build = []
+                for expected_result in qexpected:
+                    try:
+                        rank = all_results[qid].index(expected_result)
+                        if rank < MAX_RANK:
+                            q_mean_precisions_build.append(precisions[qid][rank])
+                    except Exception:
+                        pass
+                if len(q_mean_precisions_build) > 0:
+                    q_avg_mean_precision = sum(q_mean_precisions_build) / len(q_mean_precisions_build)
+                    avg_mean_precision_build.append(q_avg_mean_precision)
+        avg_mean_precision = sum(avg_mean_precision_build) / len(avg_mean_precision_build)
+        print('MAP for model ' + model.method + ' : ' + str(avg_mean_precision))
