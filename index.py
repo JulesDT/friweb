@@ -2,6 +2,8 @@
 
 import argparse
 import pickle
+import collections
+from functools import reduce
 
 from documents import DocumentNormalizer, DocumentTokenizer, StopList, InvertedIndex, CASMBlock, CS276Block
 from query import Tree
@@ -85,7 +87,68 @@ def bsbi():
         pickle.dump(doc_retrieval, f, pickle.HIGHEST_PROTOCOL)
     print("retreival index saved to file " + docRetreiveFile)
 def map_reduce():
-    pass
+    stop_list = StopList('common_words')
+    tokenizer = DocumentTokenizer(stop_list)
+    normalizer = DocumentNormalizer()
+    doc_retrieval = {}
+    document_data_store = {}
+    retrieval_list = []
+    if args.collection == 'cacm':
+        cs_block = CASMBlock('cacm.all')
+    elif args.collection == 'cs276':
+        cs_block = CS276Block('./pa1-data/*')
+    else:
+        raise Exception('Collection ' + args.collection + ' not supported')
+    ''' 
+    Map
+    '''
+    document_list = set()
+    for block in cs_block.get_next_block():
+        document_list.update(block)
+        doc_retrieval_block = {}
+        for document in block:
+            doc_retrieval_block[document.id] = document.entry_string()
+        retrieval_list.append(doc_retrieval_block)
+    '''
+    Map
+    '''
+    # mapped_data = InvertedIndex.map(document_list, tokenizer, normalizer, methods)
+    def map_tokenize(doc):
+        return [
+                    (word, doc.id, 1)
+                        for field in doc.fields_to_tokenize
+                            for word in tokenizer.tokenize(getattr(doc, field), normalizer)
+                ]
+    mapped_data = map(map_tokenize, document_list)
+    mapped_data = [item for sublist in mapped_data for item in sublist]
+    '''
+    Shuffle
+    '''
+    shuffled_data = collections.defaultdict(list)
+    for word, doc_id, value in mapped_data:
+        shuffled_data[word].append((doc_id, value))
+    '''
+    Reduce
+    '''
+    def reducer(reduced_data, new_entry):
+        for entry in new_entry[1]:
+            reduced_data[new_entry[0]][entry[0]] += 1
+        return reduced_data
+    inverted_index = reduce(reducer, shuffled_data.items(), collections.defaultdict(lambda: collections.defaultdict(int)))
+    inv_index = InvertedIndex(args.weights)
+    inv_index.inverted_index = inverted_index
+    inv_index.post_register_hook()
+
+
+    doc_retrieval = retrieval_list[0]
+    for doc_retrieval_block in retrieval_list:
+        doc_retrieval = {**doc_retrieval, **doc_retrieval_block}
+
+    inv_index.save(indexOutputFile)
+    print("inverted index saved to file " + indexOutputFile)
+    with open(docRetreiveFile, 'wb') as f:
+        pickle.dump(doc_retrieval, f, pickle.HIGHEST_PROTOCOL)
+    print("retreival index saved to file " + docRetreiveFile)
 
 if(args.method) == 'bsbi':
     bsbi()
