@@ -44,6 +44,8 @@ class Tree:
             return self.childrens[0] | (self.childrens[1])
         if self.operator == '~':
             return inv_index - self.childrens[0]
+        if self.operator is None and len(self.childrens) == 1:
+            return self.childrens[0]
 
     def query(self, inv_index, tokenizer, normalizer):
         #  execute all leaves

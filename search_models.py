@@ -86,7 +86,5 @@ class BooleanModel:
         tree = Tree(parent=None)
         Tree.parse(tree, search_string)
         result = tree.query(inv_index, tokenizer, normalizer)
-        # from IPython import embed
-        # embed()
         sorted_doc_ids = sorted(result)
         return sorted_doc_ids
