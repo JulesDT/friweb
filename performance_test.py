@@ -16,13 +16,6 @@ parser = argparse.ArgumentParser(
     description='Runs a performance test on cacm collection')
 
 parser.add_argument(
-    '-m',
-    '--model',
-    choices=['vector', 'boolean'],
-    default='vector',
-    help='the model to use for search')
-
-parser.add_argument(
     '-w',
     '--weights',
     choices=['tf-idf', 'tf-idf-norm', 'norm-freq', 'all'],
@@ -45,20 +38,14 @@ stop_list = StopList('common_words')
 tokenizer = DocumentTokenizer(stop_list)
 normalizer = DocumentNormalizer()
 
-if args.model == 'vector':
-    if args.weights == 'all':
-        models = [
-            VectorModel('tf-idf'),
-            VectorModel('tf-idf-norm'),
-            VectorModel('norm-freq')
-        ]
-    else:
-        models = [VectorModel(args.weights)]
-elif args.model == 'boolean':
-    model = BooleanModel()
+if args.weights == 'all':
+    models = [
+        VectorModel('tf-idf'),
+        VectorModel('tf-idf-norm'),
+        VectorModel('norm-freq')
+    ]
 else:
-    raise Exception('Model ' + args.model + ' does not exist')
-
+    models = [VectorModel(args.weights)]
 
 class QRels:
     def __init__(self, path):
