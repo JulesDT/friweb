@@ -137,6 +137,8 @@ def map_reduce():
     inverted_index = reduce(reducer, shuffled_data.items(), collections.defaultdict(lambda: collections.defaultdict(int)))
     inv_index = InvertedIndex(args.weights)
     inv_index.inverted_index = inverted_index
+    inv_index.post_register_hook()
+
 
     doc_retrieval = retrieval_list[0]
     for doc_retrieval_block in retrieval_list:
