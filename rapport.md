@@ -6,14 +6,14 @@
 
 ## Question 1
 
-The number of tokens can be obtained by summing the amount of time a word appears in each document.
+The number of tokens can be obtained by summing how many times a word occurs in each document.
 
 For the CACM collection, it is **105702**
 For the CS278 collection, it is **15 983 210**
 
 ## Question 2
 
-We get the size of the vocabulary by checking the length of the inverted index we have.
+We get the size of the vocabulary by checking out the length of the inverted index we have built.
 
 For the CACM collection, it is **15565**
 For the CS278 collection, it is **244 561**
