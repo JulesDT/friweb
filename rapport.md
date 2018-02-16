@@ -41,7 +41,7 @@ With the values obtained with the CS@76 collection, for a million token, we end 
 #### CACM
 
 ![CACM-frequency-rank](./freq_rank_cacm.png)
-![CACM-frequency-rank-log](./freq_rank_cacm.png)
+![CACM-frequency-rank-log](./freq_rank_log_cacm.png)
 
 #### CS276
 
