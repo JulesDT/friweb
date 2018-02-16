@@ -11,16 +11,19 @@ Different search methods are available :
 * Boolean Search
 * Vectorial Search
     * Using 'tf-idf' weights (tf-idf)
-    * Using 'tf-idf-norm' weights (normalized tf-idf)
-    * Using 'norm-freq' weights (normalized frequencies)
+    * Using 'tf-idf-norm' weights (normalized tf-idf)
+    * Using 'norm-freq' weights (normalized frequencies)
+
 
 You will find more detailed results and statistics in [this document](./rapport.md)
 
 The different services communicate each other with files containing inverted indexes and document retreival informations stored in pickle dump files.
 
-> Naming conventions : inv_index_<collection>_<weights>.pkl
->                      doc_retreive_<collection>_<weights>.pkl
-
+Naming conventions : 
+```
+inv_index_<collection>_<weights>.pkl
+doc_retreive_<collection>_<weights>.pkl
+```
 ## Design choices
 
 We have chosen to implement :
