@@ -86,33 +86,6 @@ class InvertedIndex:
             res += key + str(val) + "\n"
         return res
 
-    @staticmethod
-    def map(document_set, tokenizer, normalizer, methods):
-        inverted_index_set = set()
-        for document in document_set:
-            invIndex = InvertedIndex(methods)
-            inverted_index_set.add(invIndex)
-            document.tokenize(tokenizer, normalizer, invIndex)
-            invIndex.post_register_hook()
-        return inverted_index_set
-    
-    @staticmethod
-    def shuffle(inverted_index_list):
-        shuffled_data = collections.defaultdict(lambda: collections.defaultdict(list))
-        for inv_index in inverted_index_list:
-            for word in inv_index.inverted_index:
-                for doc_id in inv_index.inverted_index[word]:
-                    shuffled_data[word][doc_id].append(inv_index.inverted_index[word][doc_id])
-        return shuffled_data
-
-    @staticmethod
-    def reduce(shuffled_data, methods):
-        inv_index = InvertedIndex(methods)
-        for word in shuffled_data:
-            for doc_id in shuffled_data[word]:
-                inv_index.inverted_index[word][doc_id] = sum(shuffled_data[word][doc_id])
-        return inv_index
-
     def filter(self, pattern, strict=False):
         copy = InvertedIndex()
         if strict:
