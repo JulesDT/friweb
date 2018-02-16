@@ -23,9 +23,12 @@ For the CS278 collection, it is **244 561**
 For half of the corpus we have:
 
 On CACM: vocabulary size of **10255** and **54489** tokens.
-    Thus we obtain for the Heap Law: **k = 9,917**, **b = 0,636**
+
+ - Thus we obtain for the Heap Law: **k = 9,917**, **b = 0,636**
+    
 On CS278: vocabulary size of **151 350** and **7 582 480** tokens
-    Thus we obtain for the Heap Law: **k = 5,689**, **b = 0,643**
+
+ - Thus we obtain for the Heap Law: **k = 5,689**, **b = 0,643**
 
 ## Question 4
 
