@@ -89,20 +89,39 @@ class PerformanceQueries:
                             element.split('\n')[1:])
 
 
-with open(docRetreiveFile, 'rb') as f:
-    retreive_dict = pickle.load(f)
-    print("loaded retreive from " + docRetreiveFile)
+def n_points_interpolate(qrecalls, qprecisions, n):
+    # will hold result
+    qprecisions_res = [qprecisions[0]]
+    qrecalls_res = [qrecalls[0]]
 
-    inv_index = InvertedIndex([])
-    inv_index.load(indexFile)
-    print("loaded inverted index from " + indexFile)
+    # the wanted interpolation x values
+    thresholds = [(i + 1) / n for i in range(n)]
+    thresholdIter = 0
+    for i, recall in enumerate(qrecalls):
+        if thresholdIter >= len(thresholds):
+            break
 
-    qrels = QRels('./qrels.text')
-    print("loaded relations from ./qrels.text")
+        # iterate until we reach the required threshold
+        if recall < thresholds[thresholdIter]:
+            continue
+        # once it is reached fill thresholds until the recall value is not overshot
+        while thresholdIter < len(thresholds) \
+            and not thresholds[thresholdIter] > qrecalls[i]:
 
-    queries = PerformanceQueries('./query.text')
-    print("loaded queries from ./query.text")
+            # can handle affine interpolation
+            pt = qprecisions[i - 1] - (qprecisions[i - 1] - qprecisions[i]) * (
+                qrecalls[i - 1] - thresholds[thresholdIter]) / (
+                    qrecalls[i - 1] - qrecalls[i]
+                ) if qrecalls[i - 1] - qrecalls[i] > 0 else qprecisions[i - 1]
+            qprecisions_res.append(pt)
+            qrecalls_res.append(thresholds[thresholdIter])
 
+            thresholdIter += 1
+
+    return qrecalls_res, qprecisions_res
+
+
+def build_precision_recall(inv_index, queries, qrels, N):
     # plot a curve for each model
     for model in models:
         N = 20
@@ -142,6 +161,7 @@ with open(docRetreiveFile, 'rb') as f:
                         if result in qrels.queries_results[qid]
                     ]
 
+                    # recall and precision definitions
                     recall = len(right_results) / len(
                         qrels.queries_results[qid])
                     precision = len(right_results) / len(results)
@@ -149,7 +169,7 @@ with open(docRetreiveFile, 'rb') as f:
                     recalls[qid].append(recall)
                     precisions[qid].append(precision)
 
-        # keep maximum precision for lower rank
+        # keep maximum precision for lower rank (interpolation)
         for qid, qprecisions in precisions.items():
             maximum = float("-inf")
             qprecisions_interpolated = []
@@ -160,63 +180,110 @@ with open(docRetreiveFile, 'rb') as f:
             qprecisions_interpolated.reverse()
             precisions[qid] = qprecisions_interpolated
 
-        # n points interpolate
+        # n points interpolation
         for qid in precisions.keys():
 
-            def n_points_interpolate(qrecalls, qprecisions, n):
-                qprecisions = [max(qprecisions)] + qprecisions + [
-                    len(qprecisions) / len(qrels.queries_results[qid])
-                ]
-                qrecalls = [0] + qrecalls + [1]
-                qprecisions_res = [qprecisions[0]]
-                qrecalls_res = [qrecalls[0]]
-                thresholds = [(i + 1) / n for i in range(n)]
-                thresholdIter = 0
-                for i, recall in enumerate(qrecalls):
-                    if thresholdIter >= len(thresholds):
-                        break
+            qrecalls = recalls[qid]
+            qprecisions = precisions[qid]
 
-                    # iterate until we reach the required threshold
-                    if recall < thresholds[thresholdIter]:
-                        continue
-                    # once it is reached fill thresholds until the recall value is not overshot
-                    while thresholdIter < len(thresholds) \
-                        and not thresholds[thresholdIter] > qrecalls[i]:               
-
-                        # can handle affine interpolation
-                        pt = qprecisions[i - 1] - (
-                            qprecisions[i - 1] - qprecisions[i]
-                        ) * (qrecalls[i - 1] - thresholds[thresholdIter]) / (
-                            qrecalls[i - 1] - qrecalls[i]
-                        ) if qrecalls[i - 1] - qrecalls[i] > 0 else qprecisions[
-                            i - 1]
-                        qprecisions_res.append(pt)
-                        qrecalls_res.append(thresholds[thresholdIter])
-                        
-                        thresholdIter += 1
-
-
-
-                return qrecalls_res, qprecisions_res
+            qprecisions = [max(qprecisions)] + qprecisions + [
+                len(qprecisions) / len(qrels.queries_results[qid])
+            ]
+            qrecalls = [0] + qrecalls + [1]
 
             qrecalls_res, qprecisions_res = n_points_interpolate(
-                recalls[qid], precisions[qid], N)
+                qrecalls, qprecisions, N)
+
             recalls_interpolated[qid] = qrecalls_res
             precisions_interpolated[qid] = qprecisions_res
 
         # average interpolated precisions
         avg_precisions_interpolated = []
-        avg_recalls_interpolated = [i/(N) for i in range(N + 1)]
-        for i in range(N+1):
-            avg_precisions_interpolated.append(sum([precs[i] for qid, precs in precisions_interpolated.items()]) / len(precisions_interpolated))
+        avg_recalls_interpolated = [i / (N) for i in range(N + 1)]
+        for i in range(N + 1):
+            avg_precisions_interpolated.append(
+                sum([
+                    precs[i] for qid, precs in precisions_interpolated.items()
+                ]) / len(precisions_interpolated))
 
-        print(avg_recalls_interpolated)
-        print(avg_precisions_interpolated)
+        yield model, avg_recalls_interpolated, avg_precisions_interpolated
 
-        plt.plot(avg_recalls_interpolated, avg_precisions_interpolated, label=model.method)
 
+def build_f_measure(recalls, precisions, beta):
+    f_measures = []
+    for i in range(len(recalls)):
+        p = precisions[i]
+        r = recalls[i]
+        f_measures.append((1 + beta**2) * (p * r) / ((beta**2) * (p + r)))
+    return recalls, f_measures
+
+
+def build_e_measure(recalls, precisions, beta):
+    recalls, f_measures = build_f_measure(recalls, precisions, beta)
+    e_measures = list(map(lambda x: 1 - x, f_measures))
+    return recalls, e_measures
+
+
+with open(docRetreiveFile, 'rb') as f:
+    retreive_dict = pickle.load(f)
+    print("loaded retreive from " + docRetreiveFile)
+
+    inv_index = InvertedIndex([])
+    inv_index.load(indexFile)
+    print("loaded inverted index from " + indexFile)
+
+    qrels = QRels('./qrels.text')
+    print("loaded relations from ./qrels.text")
+
+    queries = PerformanceQueries('./query.text')
+    print("loaded queries from ./query.text")
+
+    recall_precision_curves = [(model, recall, precision) for (
+        model, recall,
+        precision) in build_precision_recall(inv_index, queries, qrels, 20)]
+
+    plt.figure(0)
+    for model, avg_recalls_interpolated, avg_precisions_interpolated in recall_precision_curves:
+        plt.plot(
+            avg_recalls_interpolated,
+            avg_precisions_interpolated,
+            label=model.method)
+    plt.title("recall precision")
     plt.legend()
     plt.xlabel('recall')
     plt.ylabel('precision')
     plt.savefig('./recallPrecision.png')
-    print('Recall precision curves drawn in ./recallPrecision.png')
+
+    print('Recall precision curves drawn in ./recall-precision.png')
+
+    plt.figure(1)
+    for model, avg_recalls_interpolated, avg_precisions_interpolated in recall_precision_curves:
+        avg_recalls_interpolated, avg_f_measure_interpolated = build_f_measure(
+            avg_recalls_interpolated, avg_precisions_interpolated, 1)
+        plt.plot(
+            avg_recalls_interpolated,
+            avg_f_measure_interpolated,
+            label=model.method)
+    plt.title("recall f-measure")
+    plt.legend()
+    plt.xlabel('recall')
+    plt.ylabel('f-measure')
+    plt.savefig('./f-measure.png')
+
+    print('F measure curve drawn in ./f-measure.png')
+
+    plt.figure(2)
+    for model, avg_recalls_interpolated, avg_precisions_interpolated in recall_precision_curves:
+        avg_recalls_interpolated, avg_e_measure_interpolated = build_e_measure(
+            avg_recalls_interpolated, avg_precisions_interpolated, 1)
+        plt.plot(
+            avg_recalls_interpolated,
+            avg_e_measure_interpolated,
+            label=model.method)
+    plt.title("recall e-measure")
+    plt.legend()
+    plt.xlabel('recall')
+    plt.ylabel('e-measure')
+    plt.savefig('./e-measure.png')
+
+    print('E measure curve drawn in ./e-measure.png')
